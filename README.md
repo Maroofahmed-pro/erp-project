@@ -66,7 +66,7 @@ npm run dev
 
 ```bash
 git init
-git remote add origin git@github.com:maroofsangi/erp_project.git
+git remote add origin git@github.com:maroofsangi/erp_project_sabzi.git
 git add .
 git commit -m "Initial full ERP MVP"
 git branch -M main
