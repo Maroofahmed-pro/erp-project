@@ -1,0 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
+import api from "./api";
+import { Client, Expense, InventoryItem, LedgerEntry, Purchase, User, unwrap } from "./types";
+const list = async <T,>(url:string) => unwrap<T>((await api.get(url)).data);
+export const useClients = () => useQuery({queryKey:["clients"], queryFn:()=>list<Client>("/clients/")});
+export const useInventory = () => useQuery({queryKey:["inventory"], queryFn:()=>list<InventoryItem>("/inventory/")});
+export const usePurchases = () => useQuery({queryKey:["purchases"], queryFn:()=>list<Purchase>("/purchases/")});
+export const useLedger = () => useQuery({queryKey:["ledger"], queryFn:()=>list<LedgerEntry>("/ledger/")});
+export const useExpenses = () => useQuery({queryKey:["expenses"], queryFn:()=>list<Expense>("/expenses/")});
+export const useMe = () => useQuery({queryKey:["me"], queryFn:async()=>(await api.get<User>("/me/")).data});
