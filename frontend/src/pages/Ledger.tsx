@@ -1,6 +1,6 @@
 import {useMemo,useState} from "react";
 import {useMutation,useQueryClient} from "@tanstack/react-query";
-import {BookOpenCheck,History,Loader2,MessageCircle,Printer,Search,X,Users} from "lucide-react";
+import {BookOpenCheck,History,Image,Loader2,MessageCircle,Printer,Search,X,Users} from "lucide-react";
 import {useTranslation} from "react-i18next";
 import api,{errorMessage} from "../api";
 import {useClients,useLedger,usePurchases} from "../hooks";
@@ -50,7 +50,7 @@ export default function Ledger(){
   <section className="card overflow-hidden">
    <div className="flex flex-col gap-4 bg-[var(--sidebar)] p-5 text-white sm:flex-row sm:items-center sm:justify-between">
     <div className="flex items-center gap-3"><span className="grid size-11 place-items-center rounded-xl bg-white/12 ring-1 ring-white/15"><BookOpenCheck className="size-6"/></span><div><h1 className="text-xl font-bold">{t("Recovery Book")}</h1><p className="mt-1 text-xs text-green-100">{t("Daily buyer purchases, collections and outstanding balances")}</p></div></div>
-    <ExportButtons filename={`recovery-${date}`} rows={rows.map(x=>({name:x.client.name,previous_debit:x.previous,today_purchase:x.purchase,paid:x.paid,remaining:x.remaining}))}/>
+    <ExportButtons title="Recovery Book" reportDate={date} filename={`recovery-${date}`} rows={rows.map(x=>({Name:x.client.name,"Previous Debit":x.previous,"Today Purchase":x.purchase,Collected:x.paid,Remaining:x.remaining}))}/>
    </div>
    <div className="grid gap-3 p-4 lg:grid-cols-[auto_minmax(260px,1fr)_auto]">
     <div><span className="label">{t("Business date")}</span><DateNavigator value={date} onChange={setDate} label="Business date" className="w-[255px]"/></div>
@@ -61,7 +61,7 @@ export default function Ledger(){
   </section>
   <section className="table-wrap">
    <div className="border-b px-4 py-3"><h2 className="text-sm font-bold">{t("Buyer Recovery")} — {new Date(`${date}T12:00:00`).toLocaleDateString(i18n.language==="ur"?"ur-PK":"en-PK",{day:"numeric",month:"long",year:"numeric"})}</h2><p className="mt-0.5 text-[11px] text-[var(--text-muted)]">{t("Use Full to fill the complete remaining balance, then select Add.")}</p></div>
-   <div className="desktop-table overflow-x-auto">{rows.length?<table className="data-table min-w-[980px]"><thead><tr className="bg-[var(--sidebar)]"><th className="!bg-[var(--sidebar)] !text-white">{t("Name")}</th><th className="numeric !bg-[var(--sidebar)] !text-white">{t("Debit (Previous)")}</th><th className="numeric !bg-[var(--sidebar)] !text-white">{t("Today’s Purchase")}</th><th className="numeric !bg-[var(--sidebar)] !text-white">{t("Credit / Paid")}</th><th className="numeric !bg-[var(--sidebar)] !text-white">{t("Remaining")}</th><th className="!bg-[var(--sidebar)] !text-white">{t("Add Payment")}</th></tr></thead><tbody>{rows.map(row=><tr key={row.client.id}><td><BuyerIdentity client={row.client} onClick={()=>setHistoryClient(row.client)}/></td><td className="numeric">{money(row.previous)}</td><td className="numeric font-semibold">{money(row.purchase)}</td><td className="numeric text-[var(--info)]">{money(row.paid)}</td><td className={`numeric font-bold ${row.remaining>0?"text-[var(--danger)]":"text-[var(--success)]"}`}>{money(row.remaining)} {row.remaining<=0&&<Badge tone="green">{t("Settled")}</Badge>}</td><td><Payment row={row} value={payments[row.client.id]||""} setValue={v=>setPayments(x=>({...x,[row.client.id]:v}))} full={()=>setPayments(x=>({...x,[row.client.id]:String(Math.max(row.remaining,0))}))} add={()=>pay(row)} loading={add.isPending&&add.variables?.client===row.client.id}/></td></tr>)}</tbody><tfoot><tr className="bg-[var(--surface-muted)] font-bold"><td>{t("TOTAL")}</td><td className="numeric">{money(totals.previous)}</td><td className="numeric">{money(totals.purchase)}</td><td className="numeric">{money(totals.paid)}</td><td className="numeric">{money(totals.remaining)}</td><td/></tr></tfoot></table>:<EmptyState title={t("No buyer found")} description={t("Change the search text or add a buyer from Clients.")}/>}</div>
+   <div className="desktop-table overflow-hidden">{rows.length?<table className="data-table recovery-table"><colgroup><col className="w-[28%]"/><col className="w-[13%]"/><col className="w-[12%]"/><col className="w-[10%]"/><col className="w-[13%]"/><col className="w-[24%]"/></colgroup><thead><tr className="bg-[var(--sidebar)]"><th className="!bg-[var(--sidebar)] !text-white">{t("Name")}</th><th className="numeric !bg-[var(--sidebar)] !text-white">{t("Debit (Previous)")}</th><th className="numeric !bg-[var(--sidebar)] !text-white">{t("Today’s Purchase")}</th><th className="numeric !bg-[var(--sidebar)] !text-white">{t("Credit / Paid")}</th><th className="numeric !bg-[var(--sidebar)] !text-white">{t("Remaining")}</th><th className="!bg-[var(--sidebar)] !text-white">{t("Add Payment")}</th></tr></thead><tbody>{rows.map(row=><tr key={row.client.id}><td><BuyerIdentity client={row.client} onClick={()=>setHistoryClient(row.client)}/></td><td className="numeric">{money(row.previous)}</td><td className="numeric font-semibold">{money(row.purchase)}</td><td className="numeric text-[var(--info)]">{money(row.paid)}</td><td className={`numeric font-bold ${row.remaining>0?"text-[var(--danger)]":"text-[var(--success)]"}`}>{money(row.remaining)} {row.remaining<=0&&<Badge tone="green">{t("Settled")}</Badge>}</td><td><Payment row={row} value={payments[row.client.id]||""} setValue={v=>setPayments(x=>({...x,[row.client.id]:v}))} full={()=>setPayments(x=>({...x,[row.client.id]:String(Math.max(row.remaining,0))}))} add={()=>pay(row)} loading={add.isPending&&add.variables?.client===row.client.id}/></td></tr>)}</tbody><tfoot><tr className="recovery-total-row"><td><span className="recovery-total-label">{t("TOTAL")}</span></td><td className="numeric">{money(totals.previous)}</td><td className="numeric">{money(totals.purchase)}</td><td className="numeric">{money(totals.paid)}</td><td className="numeric recovery-total-balance">{money(totals.remaining)}</td><td><span className="recovery-total-caption">{t("Remaining balance")}</span></td></tr></tfoot></table>:<EmptyState title={t("No buyer found")} description={t("Change the search text or add a buyer from Clients.")}/>}</div>
    <div className="mobile-cards gap-3 p-3">{rows.map(row=><div key={row.client.id} className="card p-4"><MobileDataCard title={row.client.name} onTitleClick={()=>setHistoryClient(row.client)} subtitle={`${date} · ${t("Previous")} ${money(row.previous)}`} amount={money(row.remaining)} status={<Badge tone={row.remaining>0?"red":"green"}>{t(row.remaining>0?"Due":"Settled")}</Badge>}/><div className="mt-3 grid grid-cols-2 gap-2 text-xs"><Info label={t("Purchase")} value={money(row.purchase)}/><Info label={t("Paid")} value={money(row.paid)}/></div><div className="mt-3"><Payment row={row} value={payments[row.client.id]||""} setValue={v=>setPayments(x=>({...x,[row.client.id]:v}))} full={()=>setPayments(x=>({...x,[row.client.id]:String(Math.max(row.remaining,0))}))} add={()=>pay(row)} loading={add.isPending&&add.variables?.client===row.client.id}/></div></div>)}</div>
   </section>
   {historyClient&&<BuyerHistory key={historyClient.id} client={historyClient} endDate={date} purchases={purchases} ledger={ledger} onClose={()=>setHistoryClient(null)}/>}
@@ -75,6 +75,7 @@ function BuyerHistory({client,endDate,purchases,ledger,onClose}:{client:Client;e
  const [singleDate,setSingleDate]=useState(endDate);
  const [rangeFrom,setRangeFrom]=useState(initialFrom),[rangeTo,setRangeTo]=useState(endDate);
  const from=mode==="day"?singleDate:rangeFrom,to=mode==="day"?singleDate:rangeTo;
+ const periodText=mode==="day"?`Date: ${singleDate}`:`Period: ${rangeFrom} to ${rangeTo}`;
  const buyerPurchases=purchases.filter(x=>x.client===client.id&&x.status==="completed"&&x.purchase_date>=from&&x.purchase_date<=to);
  const buyerCredits=ledger.filter(x=>x.client===client.id&&x.entry_type==="credit"&&x.entry_date>=from&&x.entry_date<=to);
  const opening=Number(client.opening_balance)+ledger.filter(x=>x.client===client.id&&x.entry_date<from).reduce((sum,x)=>sum+Number(x.amount),0);
@@ -82,26 +83,99 @@ function BuyerHistory({client,endDate,purchases,ledger,onClose}:{client:Client;e
  let running=opening;
  const days=dates.map(date=>{const bought=buyerPurchases.filter(x=>x.purchase_date===date).reduce((s,x)=>s+Number(x.grand_total),0);const paid=buyerCredits.filter(x=>x.entry_date===date).reduce((s,x)=>s+Math.abs(Number(x.amount)),0);running+=bought-paid;return {date,bought,paid,balance:running}});
  const totalBought=buyerPurchases.reduce((s,x)=>s+Number(x.grand_total),0),totalPaid=buyerCredits.reduce((s,x)=>s+Math.abs(Number(x.amount)),0),closing=opening+totalBought-totalPaid;
+ const totalDue=opening+totalBought,billLabel=mode==="day"?"Today's Bill":"Period Bill";
  const lines=buyerPurchases.flatMap(p=>p.items.map(item=>({date:p.purchase_date,reference:p.reference_number,item})));
+ const billLines=()=>{
+  const result=[
+   "SHAFIQUE SHAIKH AHMED & SONS",
+   "Buyer Account Statement",
+   new Date().toLocaleString("en-PK"),
+   "",
+   `Buyer: ${client.name}`,
+   `Phone: ${client.phone||"—"}`,
+   periodText,
+   "",
+   `Previous Debit: ${money(opening)}`,
+  ];
+  if(mode==="range"&&days.length){
+   result.push("","DAILY SUMMARY");
+   days.forEach(x=>result.push(x.date,`Purchase ${money(x.bought)} · Paid ${money(x.paid)}`,`Balance ${money(x.balance)}`));
+  }
+  if(lines.length){
+   result.push("","ITEM DETAILS");
+   lines.forEach(x=>{
+    result.push(x.item.item_name);
+    if(mode==="range")result.push(x.date);
+    result.push(`${x.item.quantity} ${x.item.unit} × ${money(x.item.rate)}`,`Total ${money(x.item.total)}`);
+   });
+  }
+  result.push("",`${billLabel}: ${money(totalBought)}`,`Previous Debit: ${money(opening)}`,`TOTAL DUE: ${money(totalDue)}`,`Collected: ${money(totalPaid)}`,`REMAINING: ${money(closing)}`,"","Thank you for your business");
+  return result;
+ };
  const sendWhatsApp=()=>{
   const digits=(client.phone||"").replace(/\D/g,"");
   const phone=digits.startsWith("0")?`92${digits.slice(1)}`:digits;
   if(phone.length<10)return toast(t("A valid buyer phone number is required"),"error");
-  const message=[
-   "*SABZI MANDI ERP*",
-   "Buyer Account Statement",
-   "",
-   `Buyer: ${client.name}`,
-   `Period: ${from} to ${to}`,
-   "",
-   `Previous Debit: ${money(opening)}`,
-   `Purchase: ${money(totalBought)}`,
-   `Collected: ${money(totalPaid)}`,
-   `Remaining: *${money(closing)}*`,
-   "",
-   "Thank you for your business",
-  ].join("\n");
+  const message=billLines().map(x=>["SHAFIQUE SHAIKH AHMED & SONS","DAILY SUMMARY","ITEM DETAILS"].includes(x)||x.startsWith("FINAL BALANCE:")?`*${x}*`:x).join("\n");
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`,"_blank","noopener,noreferrer");
+ };
+ const shareBillImage=async()=>{
+  const width=900,padding=45,rowHeight=38;
+  const itemHeight=mode==="range"?76:52;
+  const height=820+(mode==="range"?days.length*76+95:0)+(lines.length?110+lines.length*itemHeight:0);
+  const canvas=document.createElement("canvas");
+  canvas.width=width;canvas.height=height;
+  const ctx=canvas.getContext("2d");
+  if(!ctx)return;
+  ctx.fillStyle="#fff";ctx.fillRect(0,0,width,height);
+  ctx.fillStyle="#111";
+  const font=(size:number,bold=false)=>{ctx.font=`${bold?"bold ":""}${size}px "Courier New", monospace`};
+  const center=(text:string,y:number,size=27,bold=false)=>{font(size,bold);ctx.textAlign="center";ctx.fillText(text,width/2,y)};
+  const left=(text:string,y:number,size=27,bold=false)=>{font(size,bold);ctx.textAlign="left";ctx.fillText(text,padding,y)};
+  const pair=(label:string,value:string,y:number,bold=false)=>{font(27,bold);ctx.textAlign="left";ctx.fillText(label,padding,y);ctx.textAlign="right";ctx.fillText(value,width-padding,y)};
+  const rule=(y:number)=>{ctx.save();ctx.setLineDash([8,5]);ctx.strokeStyle="#222";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(padding,y);ctx.lineTo(width-padding,y);ctx.stroke();ctx.restore()};
+  center("SHAFIQUE SHAIKH AHMED & SONS",62,30,true);
+  center("BUYER ACCOUNT STATEMENT",102,21,true);
+  center(new Date().toLocaleString("en-PK"),136,19);
+  rule(160);
+  left(`Buyer:  ${client.name}`,198,21,true);
+  left(`Phone:  ${client.phone||"—"}`,232,21);
+  left(periodText,266,21,true);
+  rule(286);
+  pair("Previous Debit",money(opening),326,true);
+  let y=350;
+  if(mode==="range"&&days.length){
+   rule(y);y+=36;center("DAILY SUMMARY",y,21,true);y+=22;rule(y);y+=34;
+   days.forEach(x=>{pair(x.date,money(x.balance),y,true);y+=rowHeight;left(`Purchase ${money(x.bought)} · Paid ${money(x.paid)}`,y,19);y+=rowHeight});
+  }
+  if(lines.length){
+   rule(y);y+=36;center("ITEM DETAILS",y,21,true);y+=22;rule(y);y+=32;
+   font(18,true);ctx.textAlign="left";ctx.fillText("PRODUCT",padding,y);ctx.textAlign="right";ctx.fillText("QTY",520,y);ctx.fillText("RATE",680,y);ctx.fillText("AMOUNT",width-padding,y);y+=30;rule(y);y+=34;
+   lines.forEach(x=>{
+    font(19,true);ctx.textAlign="left";ctx.fillText(x.item.item_name.slice(0,22),padding,y);
+    ctx.textAlign="right";ctx.fillText(`${x.item.quantity} ${x.item.unit}`,520,y);ctx.fillText(money(x.item.rate).replace("Rs ",""),680,y);ctx.fillText(money(x.item.total),width-padding,y);
+    y+=rowHeight;
+    if(mode==="range"){left(x.date,y,17);y+=rowHeight}
+   });
+  }
+  rule(y);y+=55;
+  pair(billLabel,money(totalBought),y,true);y+=rowHeight;
+  pair("Previous Debit",money(opening),y);y+=rowHeight;
+  rule(y);y+=50;
+  pair("TOTAL DUE",money(totalDue),y,true);y+=rowHeight;
+  pair("Collected",money(totalPaid),y);y+=rowHeight;
+  pair("REMAINING",money(closing),y,true);
+  y+=70;center("Thank you for your business",y,25);
+  const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/png",0.95));
+  if(!blob)return toast(t("Unable to create bill image"),"error");
+  const file=new File([blob],`bill-${client.name.replace(/[^\w-]+/g,"-")}-${from}.png`,{type:"image/png"});
+  if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){
+   try{await navigator.share({files:[file],title:`Bill - ${client.name}`,text:`Account statement: ${from} to ${to}`})}catch(error){if((error as DOMException).name!=="AbortError")toast(t("Unable to share bill image"),"error")}
+  }else{
+   const url=URL.createObjectURL(blob),link=document.createElement("a");
+   link.href=url;link.download=file.name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+   toast(t("Bill image downloaded. Attach it in WhatsApp."));
+  }
  };
  const printStatement=()=>{
   const source=document.querySelector<HTMLElement>(".history-modal .statement-print");
@@ -140,8 +214,8 @@ function BuyerHistory({client,endDate,purchases,ledger,onClose}:{client:Client;e
      <HistoryTable title={t("Products purchased")} empty={t("No purchases found in this date range.")} hasRows={lines.length>0}><table className="data-table"><thead><tr><th>{t("Date")}</th><th>{t("Product")}</th><th className="numeric">{t("Quantity")}</th><th className="numeric">{t("Rate (PKR)")}</th><th className="numeric">{t("Line total")}</th></tr></thead><tbody>{lines.map(({date,reference,item},i)=><tr key={`${reference}-${i}`}><td>{new Date(`${date}T12:00:00`).toLocaleDateString(undefined,{day:"2-digit",month:"short"})}</td><td><b>{item.item_name}</b><small className="block text-[var(--text-muted)]">{reference}</small></td><td className="numeric">{item.quantity} {item.unit}</td><td className="numeric">{money(item.rate)}</td><td className="numeric font-bold text-[var(--primary)]">{money(item.total)}</td></tr>)}</tbody></table></HistoryTable>
     </div>
    </div>
-   <div className="no-print flex flex-col gap-3 border-t bg-[var(--surface-secondary)] p-4 sm:flex-row sm:items-center sm:justify-between"><span className="text-xs text-[var(--text-muted)]">{t("Statement period")}: {from} — {to}</span><div className="flex flex-wrap gap-2"><button className="btn-secondary" onClick={onClose}>{t("Close")}</button><button className="btn-secondary !border-[#25D366] !text-[#128C4A]" onClick={sendWhatsApp}><MessageCircle/>{t("Send on WhatsApp")}</button><button className="btn-primary" onClick={printStatement}><Printer/>{t("Print statement")}</button></div></div>
-   <StatementPrint client={client} from={from} to={to} opening={opening} bought={totalBought} paid={totalPaid} closing={closing} days={days} lines={lines}/>
+   <div className="no-print flex flex-col gap-3 border-t bg-[var(--surface-secondary)] p-4 sm:flex-row sm:items-center sm:justify-between"><span className="text-xs text-[var(--text-muted)]">{t("Statement period")}: {from} — {to}</span><div className="flex flex-wrap gap-2"><button className="btn-secondary" onClick={onClose}>{t("Close")}</button><button className="btn-secondary !border-[#25D366] !text-[#128C4A]" onClick={sendWhatsApp}><MessageCircle/>{t("Send text")}</button><button className="btn-secondary !border-[#25D366] !text-[#128C4A]" onClick={shareBillImage}><Image/>{t("Share bill image")}</button><button className="btn-primary" onClick={printStatement}><Printer/>{t("Print statement")}</button></div></div>
+   <StatementPrint client={client} periodText={periodText} showItemDates={mode==="range"} billLabel={billLabel} opening={opening} bought={totalBought} paid={totalPaid} closing={closing} days={mode==="range"?days:[]} lines={lines}/>
   </div>
  </div>;
 }
@@ -149,13 +223,14 @@ function BuyerHistory({client,endDate,purchases,ledger,onClose}:{client:Client;e
 function HistoryTable({title,empty,hasRows,children}:{title:string;empty:string;hasRows:boolean;children:React.ReactNode}){return <section className="history-table overflow-hidden rounded-2xl border bg-[var(--surface)] shadow-[0_1px_2px_rgba(15,35,25,.04)]"><div className="flex items-center justify-between border-b bg-[var(--surface-secondary)] px-4 py-3"><h3 className="text-sm font-bold">{title}</h3><span className="rounded-full bg-[var(--primary-soft)] px-2.5 py-1 text-[10px] font-bold text-[var(--primary)]">{hasRows?"●":"—"}</span></div><div className="max-h-[300px] overflow-y-auto overflow-x-hidden">{hasRows?children:<div className="p-8 text-center text-sm text-[var(--text-muted)]">{empty}</div>}</div></section>}
 function HistoryMetric({label,value,tone}:{label:string;value:string;tone:"green"|"blue"|"amber"|"red"}){const styles={green:"border-emerald-200 bg-emerald-50 text-emerald-700",blue:"border-blue-200 bg-blue-50 text-blue-700",amber:"border-amber-200 bg-amber-50 text-amber-700",red:"border-red-200 bg-red-50 text-red-700"};return <div className={`rounded-2xl border p-4 ${styles[tone]}`}><p className="text-[10px] font-bold uppercase tracking-wider opacity-70">{label}</p><p className="mt-2 text-xl font-extrabold tabular-nums">{value}</p></div>}
 
-function StatementPrint({client,from,to,opening,bought,paid,closing,days,lines}:{client:Client;from:string;to:string;opening:number;bought:number;paid:number;closing:number;days:{date:string;bought:number;paid:number;balance:number}[];lines:{date:string;reference:string;item:Purchase["items"][number]}[]}){
- return <div className="statement-print print-only"><div className="receipt-head"><h1>SABZI MANDI ERP</h1><p>Buyer Account Statement</p><p>{new Date().toLocaleString("en-PK")}</p></div><div className="receipt-rule"/><p><b>Buyer:</b> {client.name}</p><p><b>Phone:</b> {client.phone||"—"}</p><p><b>Period:</b> {from} to {to}</p><div className="receipt-rule"/><div className="receipt-totals"><span>Previous Debit</span><b>{money(opening)}</b><span>Purchase</span><b>{money(bought)}</b><span>Collected</span><b>{money(paid)}</b><span>Remaining</span><b>{money(closing)}</b></div><div className="receipt-rule"/><h3>DAILY SUMMARY</h3>{days.map(x=><div className="receipt-row" key={x.date}><span>{x.date}<small>Purchase {money(x.bought)} · Paid {money(x.paid)}</small></span><b>{money(x.balance)}</b></div>)}{lines.length>0&&<><div className="receipt-rule"/><h3>ITEM DETAILS</h3>{lines.map((x,i)=><div className="receipt-item" key={i}><b>{x.item.item_name}</b><span>{x.date}</span><small>{x.item.quantity} {x.item.unit} × {money(x.item.rate)}</small><strong>{money(x.item.total)}</strong></div>)}</>}<div className="receipt-rule"/><div className="receipt-final"><span>FINAL BALANCE</span><b>{money(closing)}</b></div><p className="receipt-thanks">Thank you for your business</p></div>;
+function StatementPrint({client,periodText,showItemDates,billLabel,opening,bought,paid,closing,days,lines}:{client:Client;periodText:string;showItemDates:boolean;billLabel:string;opening:number;bought:number;paid:number;closing:number;days:{date:string;bought:number;paid:number;balance:number}[];lines:{date:string;reference:string;item:Purchase["items"][number]}[]}){
+ const totalDue=opening+bought;
+ return <div className="statement-print print-only"><div className="receipt-head"><h1>SHAFIQUE SHAIKH AHMED &amp; SONS</h1><p><b>BUYER ACCOUNT STATEMENT</b></p><p>{new Date().toLocaleString("en-PK")}</p></div><div className="receipt-rule"/><p><b>Buyer:</b> {client.name}</p><p><b>Phone:</b> {client.phone||"—"}</p><p><b>{periodText.split(":")[0]}:</b>{periodText.slice(periodText.indexOf(":")+1)}</p><div className="receipt-rule"/><div className="receipt-totals"><b>Previous Debit</b><b>{money(opening)}</b></div>{days.length>0&&<><div className="receipt-rule"/><h3>DAILY SUMMARY</h3>{days.map(x=><div className="receipt-row" key={x.date}><span>{x.date}<small>Purchase {money(x.bought)} · Paid {money(x.paid)}</small></span><b>{money(x.balance)}</b></div>)}</>}{lines.length>0&&<><div className="receipt-rule"/><h3>ITEM DETAILS</h3><table className="receipt-products"><thead><tr><th>Product</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>{lines.map((x,i)=><tr key={i}><td><b>{x.item.item_name}</b>{showItemDates&&<small>{x.date}</small>}</td><td>{x.item.quantity} {x.item.unit}</td><td>{money(x.item.rate).replace("Rs ","")}</td><td><b>{money(x.item.total)}</b></td></tr>)}</tbody></table></>}<div className="receipt-rule"/><div className="receipt-totals receipt-settlement"><b>{billLabel}</b><b>{money(bought)}</b><span>Previous Debit</span><b>{money(opening)}</b></div><div className="receipt-rule"/><div className="receipt-totals receipt-settlement"><b>TOTAL DUE</b><b>{money(totalDue)}</b><span>Collected</span><b>{money(paid)}</b><b>REMAINING</b><b>{money(closing)}</b></div><div className="receipt-rule"/><p className="receipt-thanks"><b>Thank you for your business</b></p></div>;
 }
 
 function Payment({row,value,setValue,full,add,loading}:{row:DailyRow;value:string;setValue:(v:string)=>void;full:()=>void;add:()=>void;loading:boolean}){
  const {t}=useTranslation();
- return <div className="flex min-w-[250px] gap-2"><div className="relative flex-1"><span className="absolute start-3 top-1/2 -translate-y-1/2 text-xs text-[var(--text-muted)]">Rs</span><input aria-label={`${t("Payment for")} ${row.client.name}`} min="0" max={Math.max(row.remaining,0)} step="0.01" type="number" className="field h-9 ps-9" value={value} onChange={e=>setValue(e.target.value)} placeholder="0"/></div><button type="button" className="btn-secondary h-9 px-3 text-xs" disabled={row.remaining<=0} onClick={full}>{t("Full")}</button><button type="button" className="btn-primary h-9 px-3 text-xs" disabled={row.remaining<=0||loading} onClick={add}>{loading?<Loader2 className="size-4 animate-spin"/>:t("Add")}</button></div>;
+ return <div className="flex min-w-0 gap-1.5"><div className="relative min-w-0 flex-1"><span className="absolute start-2 top-1/2 -translate-y-1/2 text-xs text-[var(--text-muted)]">Rs</span><input aria-label={`${t("Payment for")} ${row.client.name}`} min="0" max={Math.max(row.remaining,0)} step="0.01" type="number" className="field h-9 min-w-0 ps-7" value={value} onChange={e=>setValue(e.target.value)} placeholder="0"/></div><button type="button" className="btn-secondary h-9 shrink-0 px-2 text-xs" disabled={row.remaining<=0} onClick={full}>{t("Full")}</button><button type="button" className="btn-primary h-9 shrink-0 px-2 text-xs" disabled={row.remaining<=0||loading} onClick={add}>{loading?<Loader2 className="size-4 animate-spin"/>:t("Add")}</button></div>;
 }
 function BuyerIdentity({client,onClick}:{client:Client;onClick:()=>void}){
  const {t}=useTranslation();
