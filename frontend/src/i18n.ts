@@ -5,10 +5,51 @@ const urPages:Record<string,string>={
 "Management Suite":"انتظامی نظام","No records found":"کوئی ریکارڈ نہیں ملا","Try changing the filters or add a new record.":"فلٹر تبدیل کریں یا نیا ریکارڈ شامل کریں۔","Unable to load data":"ڈیٹا لوڈ نہیں ہو سکا","Try again":"دوبارہ کوشش کریں","Delete record?":"ریکارڈ حذف کریں؟","This action cannot be undone.":"یہ عمل واپس نہیں کیا جا سکتا۔","Cancel":"منسوخ کریں","Delete":"حذف کریں","Print":"پرنٹ","CSV export":"CSV برآمد","Excel export":"Excel برآمد","PDF export":"PDF برآمد","of":"میں سے",
 "Clients":"کلائنٹس","Manage customer accounts, credit and ledgers.":"خریداروں کے اکاؤنٹس، کریڈٹ اور کھاتے منظم کریں۔","Add Client":"کلائنٹ شامل کریں","Total Clients":"کل کلائنٹس","Active Accounts":"فعال اکاؤنٹس","Outstanding":"بقایا","Search clients...":"کلائنٹس تلاش کریں...","All statuses":"تمام حالتیں","Active":"فعال","Inactive":"غیر فعال","Client":"کلائنٹ","Phone":"فون","Address":"پتہ","Opening":"ابتدائی","Balance":"بیلنس","Credit limit":"کریڈٹ حد","Status":"حالت","Actions":"کارروائیاں","Edit client":"کلائنٹ میں ترمیم","Add client":"کلائنٹ شامل کریں","All financial amounts are in PKR.":"تمام مالی رقوم پاکستانی روپے میں ہیں۔","Full name":"پورا نام","Opening balance":"ابتدائی بیلنس","Notes":"نوٹس","Active account":"فعال اکاؤنٹ","Save client":"کلائنٹ محفوظ کریں","Complete client ledger":"مکمل کلائنٹ کھاتہ","Limit":"حد","Date":"تاریخ","Description":"تفصیل","Type":"قسم","Amount":"رقم","No phone":"فون نہیں","No address":"پتہ نہیں",
 "Sorting / Purchase":"چھانٹی / خریداری","Record buyer purchases using client accounts and update inventory automatically.":"خریدار کے اکاؤنٹ سے فروخت درج کریں اور انوینٹری خودکار کم کریں۔","Today's lots":"آج کی لاٹس","Purchase value":"خریداری کی قیمت","Completed":"مکمل","Buyer purchase information":"خریدار کی خریداری کی معلومات","Buyer / client":"خریدار / کلائنٹ","Select buyer from clients":"کلائنٹس میں سے خریدار منتخب کریں","Purchase date":"خریداری کی تاریخ","Vehicle number":"گاڑی نمبر","Reference number":"حوالہ نمبر","Products":"مصنوعات","Choose an inventory product or type a new product name.":"انوینٹری سے مصنوعات منتخب کریں یا نیا نام لکھیں۔","Add row":"قطار شامل کریں","Grand total":"کل رقم","Complete purchase":"خریداری مکمل کریں","Search buyer purchase history...":"خریدار کی خریداری تلاش کریں...","Reference":"حوالہ","Vehicle":"گاڑی","Total":"کل","Product":"مصنوعات","Quantity":"مقدار","Unit":"اکائی","Rate (PKR)":"ریٹ (روپے)","Line total":"قطار کا کل","Available":"دستیاب","Select or type product name":"مصنوعات منتخب کریں یا نام لکھیں","No inventory match. Continue typing to use a custom product.":"انوینٹری میں مماثلت نہیں؛ نیا نام لکھنا جاری رکھیں۔","Reduce the highlighted quantity to the available stock range before completing.":"مکمل کرنے سے پہلے مقدار دستیاب اسٹاک تک کم کریں۔",
-"Recovery Book":"ریکوری بک","Daily buyer recovery workspace":"روزانہ خریدار ریکوری ورک اسپیس","Business date":"کاروباری تاریخ","Find buyer":"خریدار تلاش کریں","Search by buyer name or phone...":"خریدار کے نام یا فون سے تلاش کریں...","Previous debit":"پچھلا ڈیبٹ","Today's purchase":"آج کی خریداری","Credit / Paid":"کریڈٹ / ادا شدہ","Remaining":"بقایا","Add payment":"ادائیگی شامل کریں","Full":"مکمل","Add":"شامل کریں","Settled":"تصفیہ شدہ","No buyers found for this date.":"اس تاریخ کے لیے کوئی خریدار نہیں ملا۔",
+"Recovery Book":"ریکوری بک","Daily buyer recovery workspace":"روزانہ خریدار ریکوری ورک اسپیس","Daily buyer purchases, collections and outstanding balances":"خریداروں کی روزانہ خریداری، وصولیاں اور بقایا جات","Business date":"کاروباری تاریخ","Find buyer":"خریدار تلاش کریں","Search by buyer name or phone...":"خریدار کے نام یا فون سے تلاش کریں...","Clear":"صاف کریں","Previous day":"پچھلا دن","Next day":"اگلا دن"," buyers":" خریدار","Previous debit":"پچھلا ڈیبٹ","Today's purchase":"آج کی خریداری","Today’s purchase":"آج کی خریداری","Collected":"وصول شدہ","Credit / Paid":"کریڈٹ / ادا شدہ","Remaining":"بقایا","Buyer Recovery — ":"خریدار ریکوری — ","Use Full to fill the complete remaining balance, then select Add.":"مکمل بقایا رقم درج کرنے کے لیے مکمل دبائیں، پھر شامل کریں منتخب کریں۔","Debit (Previous)":"پچھلا ڈیبٹ","Today’s Purchase":"آج کی خریداری","Add Payment":"ادائیگی شامل کریں","Add payment":"ادائیگی شامل کریں","Full":"مکمل","Add":"شامل کریں","Settled":"تصفیہ شدہ","Due":"واجب الادا","Purchase":"خریداری","Paid":"ادا شدہ","Previous ":"پچھلا ","TOTAL":"کل","No buyer found":"کوئی خریدار نہیں ملا","Change the search text or add a buyer from Clients.":"تلاش کا متن تبدیل کریں یا کلائنٹس میں نیا خریدار شامل کریں۔","No buyers found for this date.":"اس تاریخ کے لیے کوئی خریدار نہیں ملا۔",
 "Inventory":"انوینٹری","Manage stock levels, rates and reorder thresholds.":"اسٹاک، ریٹس اور دوبارہ آرڈر کی حد منظم کریں۔","Add item":"آئٹم شامل کریں","Stock value":"اسٹاک کی قیمت","Low stock":"کم اسٹاک","Search inventory...":"انوینٹری تلاش کریں...","All categories":"تمام اقسام","Item":"آئٹم","Category":"قسم","Current stock":"موجودہ اسٹاک","Minimum stock":"کم از کم اسٹاک","Purchase rate":"خریداری ریٹ","Value":"قیمت","In stock":"اسٹاک میں","Adjust":"ایڈجسٹ","Add inventory item":"انوینٹری آئٹم شامل کریں","Edit inventory item":"انوینٹری آئٹم میں ترمیم","Name":"نام","Save item":"آئٹم محفوظ کریں","Update stock":"اسٹاک اپ ڈیٹ کریں",
 "Expenses":"اخراجات","Record operating costs and payment methods.":"کاروباری اخراجات اور ادائیگی کے طریقے درج کریں۔","Today":"آج","This month":"اس ماہ","All recorded":"تمام ریکارڈ","Search expenses...":"اخراجات تلاش کریں...","Expense":"خرچ","Paid to":"ادا کیا گیا","Method":"طریقہ","Edit expense":"خرچ میں ترمیم","Add expense":"خرچ شامل کریں","Title":"عنوان","Amount (PKR)":"رقم (روپے)","Payment method":"ادائیگی کا طریقہ","Cash":"نقد","Bank transfer":"بینک ٹرانسفر","Cheque":"چیک","Mobile wallet":"موبائل والٹ","Save expense":"خرچ محفوظ کریں","Select or type expense category":"خرچ کی قسم منتخب کریں یا لکھیں","No matching category. Continue typing to use your custom category.":"مماثل قسم نہیں؛ اپنی قسم لکھنا جاری رکھیں۔",
 "Reports":"رپورٹس","Financial and operational insights for better mandi decisions.":"بہتر منڈی فیصلوں کے لیے مالی اور کاروباری معلومات۔","Open report":"رپورٹ کھولیں","Purchase Report":"خریداری رپورٹ","Recovery Report":"ریکوری رپورٹ","Client Ledger":"کلائنٹ کھاتہ","Outstanding Report":"بقایا رپورٹ","Inventory Report":"انوینٹری رپورٹ","Expense Report":"اخراجات رپورٹ","Daily Summary":"روزانہ خلاصہ","Monthly Summary":"ماہانہ خلاصہ","Clear filters":"فلٹر صاف کریں","Total value":"کل قیمت","Records":"ریکارڈز","Average":"اوسط","Performance":"کارکردگی",
 "Users & Roles":"صارفین اور کردار","ERP access and responsibility assignments.":"ERP رسائی اور ذمہ داریوں کی تقسیم۔","Total users":"کل صارفین","Administrators":"منتظمین","Active roles":"فعال کردار","User":"صارف","Email":"ای میل","Role":"کردار","Language":"زبان","Settings":"ترتیبات","Configure the ERP workspace.":"ERP ورک اسپیس ترتیب دیں۔","Business profile":"کاروباری پروفائل","Receipt and report defaults.":"رسید اور رپورٹ کی طے شدہ ترتیبات۔","Business name":"کاروباری نام","Market address":"منڈی کا پتہ","Currency":"کرنسی","Default unit":"طے شدہ اکائی","Save settings":"ترتیبات محفوظ کریں","Help & Support":"مدد اور معاونت","Need assistance?":"مدد چاہیے؟"
 };
+urPages["Name in Urdu"]="اردو میں نام";
+Object.assign(urPages,{
+ "buyers":"خریدار",
+ "Buyer Recovery":"خریدار ریکوری",
+ "Previous":"پچھلا",
+ "Payment for":"ادائیگی برائے",
+ "Recovery payment added":"ریکوری کی ادائیگی شامل کر دی گئی",
+ "Enter a valid payment amount":"درست ادائیگی کی رقم درج کریں",
+ "Payment cannot exceed":"ادائیگی اس رقم سے زیادہ نہیں ہو سکتی",
+ "Buyer purchase and payment history":"خریدار کی خریداری اور ادائیگی کی تفصیل",
+ "Choose a date to view purchases, payments and balance.":"خریداری، ادائیگی اور بقایا دیکھنے کے لیے تاریخ منتخب کریں۔",
+ "History date":"تفصیل کی تاریخ",
+ "Previous balance":"پچھلا بقایا",
+ "Purchased on date":"اس تاریخ کی خریداری",
+ "Paid on date":"اس تاریخ کی ادائیگی",
+ "Remaining balance":"باقی بقایا",
+ "No purchases found for this buyer on the selected date.":"منتخب تاریخ پر اس خریدار کی کوئی خریداری نہیں ملی۔"
+ ,"Open history":"تفصیل کھولیں"
+ ,"Buyer account history":"خریدار کے کھاتے کی تفصیل"
+ ,"Select history range":"تفصیل کی مدت منتخب کریں"
+ ,"Choose any period to review purchases, payments and running balance.":"خریداری، ادائیگی اور چلتا ہوا بقایا دیکھنے کے لیے کوئی بھی مدت منتخب کریں۔"
+ ,"Opening balance":"ابتدائی بقایا"
+ ,"Total purchases":"کل خریداری"
+ ,"Total paid":"کل ادا شدہ"
+ ,"Closing balance":"اختتامی بقایا"
+ ,"Daily account summary":"روزانہ کھاتے کا خلاصہ"
+ ,"Products purchased":"خریدی گئی اشیاء"
+ ,"No activity found in this date range.":"اس مدت میں کوئی سرگرمی نہیں ملی۔"
+ ,"No purchases found in this date range.":"اس مدت میں کوئی خریداری نہیں ملی۔"
+ ,"Statement period":"تفصیل کی مدت"
+ ,"Close":"بند کریں"
+ ,"Print statement":"تفصیل پرنٹ کریں"
+ ,"Customer statement":"خریدار کے کھاتے کی تفصیل"
+ ,"View account activity":"کھاتے کی سرگرمی دیکھیں"
+ ,"Review purchases and payments for one day.":"ایک دن کی خریداری اور ادائیگیاں دیکھیں۔"
+ ,"Compare activity across a custom date range.":"اپنی منتخب مدت کی سرگرمی کا جائزہ لیں۔"
+ ,"Single day":"ایک دن"
+ ,"Date range":"تاریخوں کی مدت"
+ ,"Select date":"تاریخ منتخب کریں"
+ ,"Select range":"مدت منتخب کریں"
+ });
 const lang=localStorage.getItem("lang")||"en";void i18n.use(initReactI18next).init({resources:{en:{translation:en},ur:{translation:{...ur,...urPages}}},lng:lang,fallbackLng:"en",interpolation:{escapeValue:false}});document.documentElement.dir=lang==="ur"?"rtl":"ltr";document.documentElement.lang=lang;export default i18n;

@@ -1,4 +1,5 @@
-from django.db.models import Sum
+from django.db.models import F, Sum
+from django.db.models.deletion import ProtectedError
 from django.utils.timezone import localdate
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes
@@ -16,6 +17,12 @@ class ClientViewSet(BaseModelViewSet):
     queryset = Client.objects.all().order_by("name")
     serializer_class = ClientSerializer
     search_fields = ["name","phone"]
+    def perform_destroy(self, instance):
+        try:
+            instance.delete()
+        except ProtectedError:
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError("This client has purchases and cannot be deleted. Deactivate the account instead.")
 
 class InventoryViewSet(BaseModelViewSet):
     queryset = InventoryItem.objects.all().order_by("name")
@@ -54,7 +61,7 @@ def dashboard(request):
     credits = LedgerEntry.objects.filter(entry_date=today, entry_type="credit").aggregate(v=Sum("amount"))["v"] or 0
     expenses = Expense.objects.filter(expense_date=today).aggregate(v=Sum("amount"))["v"] or 0
     clients = Client.objects.filter(is_active=True).count()
-    low_stock = InventoryItem.objects.filter(current_stock__lte=models.F("minimum_stock")).count() if False else 0
+    low_stock = InventoryItem.objects.filter(current_stock__lte=F("minimum_stock")).count()
     return Response({
         "today_purchase": purchases,
         "today_recovery": abs(credits),

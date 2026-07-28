@@ -20,6 +20,7 @@ class User(AbstractUser):
 
 class Client(TimeStampedModel):
     name = models.CharField(max_length=150)
+    name_ur = models.CharField(max_length=150, blank=True)
     phone = models.CharField(max_length=30, blank=True)
     address = models.TextField(blank=True)
     opening_balance = models.DecimalField(max_digits=14, decimal_places=2, default=0)
