@@ -1,5 +1,14 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-const baseURL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";
+const configuredBaseURL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";
+const baseURL = (() => {
+  const url = new URL(configuredBaseURL, window.location.origin);
+  const localApi = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+  const openedFromAnotherDevice = window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1";
+  // When the local frontend is opened from a phone, localhost would point to
+  // the phone. Use the laptop hostname/IP that served the frontend instead.
+  if (localApi && openedFromAnotherDevice) url.hostname = window.location.hostname;
+  return url.toString().replace(/\/$/, "");
+})();
 const api = axios.create({ baseURL, timeout: 15000 });
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("access");

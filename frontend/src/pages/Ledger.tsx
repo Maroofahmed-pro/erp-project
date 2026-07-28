@@ -1,6 +1,6 @@
 import {useMemo,useState} from "react";
 import {useMutation,useQueryClient} from "@tanstack/react-query";
-import {BookOpenCheck,History,Loader2,Printer,Search,X,Users} from "lucide-react";
+import {BookOpenCheck,History,Loader2,MessageCircle,Printer,Search,X,Users} from "lucide-react";
 import {useTranslation} from "react-i18next";
 import api,{errorMessage} from "../api";
 import {useClients,useLedger,usePurchases} from "../hooks";
@@ -83,6 +83,26 @@ function BuyerHistory({client,endDate,purchases,ledger,onClose}:{client:Client;e
  const days=dates.map(date=>{const bought=buyerPurchases.filter(x=>x.purchase_date===date).reduce((s,x)=>s+Number(x.grand_total),0);const paid=buyerCredits.filter(x=>x.entry_date===date).reduce((s,x)=>s+Math.abs(Number(x.amount)),0);running+=bought-paid;return {date,bought,paid,balance:running}});
  const totalBought=buyerPurchases.reduce((s,x)=>s+Number(x.grand_total),0),totalPaid=buyerCredits.reduce((s,x)=>s+Math.abs(Number(x.amount)),0),closing=opening+totalBought-totalPaid;
  const lines=buyerPurchases.flatMap(p=>p.items.map(item=>({date:p.purchase_date,reference:p.reference_number,item})));
+ const sendWhatsApp=()=>{
+  const digits=(client.phone||"").replace(/\D/g,"");
+  const phone=digits.startsWith("0")?`92${digits.slice(1)}`:digits;
+  if(phone.length<10)return toast(t("A valid buyer phone number is required"),"error");
+  const message=[
+   "*SABZI MANDI ERP*",
+   "Buyer Account Statement",
+   "",
+   `Buyer: ${client.name}`,
+   `Period: ${from} to ${to}`,
+   "",
+   `Previous Debit: ${money(opening)}`,
+   `Purchase: ${money(totalBought)}`,
+   `Collected: ${money(totalPaid)}`,
+   `Remaining: *${money(closing)}*`,
+   "",
+   "Thank you for your business",
+  ].join("\n");
+  window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`,"_blank","noopener,noreferrer");
+ };
  const printStatement=()=>{
   const source=document.querySelector<HTMLElement>(".history-modal .statement-print");
   if(!source)return;
@@ -90,10 +110,24 @@ function BuyerHistory({client,endDate,purchases,ledger,onClose}:{client:Client;e
   clone.classList.add("print-clone");
   document.body.appendChild(clone);
   document.body.classList.add("print-statement");
-  const cleanup=()=>{document.body.classList.remove("print-statement");clone.remove();window.onafterprint=null};
-  window.onafterprint=cleanup;
-  window.print();
-  setTimeout(()=>{if(document.body.contains(clone))cleanup()},1500);
+  let finished=false;
+  const cleanup=()=>{
+   if(finished)return;
+   finished=true;
+   document.body.classList.remove("print-statement");
+   clone.remove();
+   window.removeEventListener("afterprint",cleanup);
+   printMedia.removeEventListener?.("change",onPrintChange);
+   clearTimeout(fallback);
+  };
+  const onPrintChange=(event:MediaQueryListEvent)=>{if(!event.matches)cleanup()};
+  const printMedia=window.matchMedia("print");
+  window.addEventListener("afterprint",cleanup,{once:true});
+  printMedia.addEventListener?.("change",onPrintChange);
+  // Mobile browsers can take several seconds to build the native print preview.
+  // Keep the cloned statement alive until the browser reports that printing ended.
+  const fallback=window.setTimeout(cleanup,120000);
+  try{window.print()}catch(error){cleanup();throw error}
  };
  return <div className="history-modal fixed inset-0 z-[80] flex items-center justify-center bg-black/55 p-3 backdrop-blur-[2px]" onMouseDown={e=>e.target===e.currentTarget&&onClose()}>
   <div className="flex max-h-[94dvh] w-full max-w-5xl flex-col overflow-hidden rounded-[22px] bg-[var(--surface)] shadow-[0_30px_90px_rgba(0,0,0,.28)]">
@@ -106,7 +140,7 @@ function BuyerHistory({client,endDate,purchases,ledger,onClose}:{client:Client;e
      <HistoryTable title={t("Products purchased")} empty={t("No purchases found in this date range.")} hasRows={lines.length>0}><table className="data-table"><thead><tr><th>{t("Date")}</th><th>{t("Product")}</th><th className="numeric">{t("Quantity")}</th><th className="numeric">{t("Rate (PKR)")}</th><th className="numeric">{t("Line total")}</th></tr></thead><tbody>{lines.map(({date,reference,item},i)=><tr key={`${reference}-${i}`}><td>{new Date(`${date}T12:00:00`).toLocaleDateString(undefined,{day:"2-digit",month:"short"})}</td><td><b>{item.item_name}</b><small className="block text-[var(--text-muted)]">{reference}</small></td><td className="numeric">{item.quantity} {item.unit}</td><td className="numeric">{money(item.rate)}</td><td className="numeric font-bold text-[var(--primary)]">{money(item.total)}</td></tr>)}</tbody></table></HistoryTable>
     </div>
    </div>
-   <div className="no-print flex items-center justify-between border-t bg-[var(--surface-secondary)] p-4"><span className="text-xs text-[var(--text-muted)]">{t("Statement period")}: {from} — {to}</span><div className="flex gap-2"><button className="btn-secondary" onClick={onClose}>{t("Close")}</button><button className="btn-primary" onClick={printStatement}><Printer/>{t("Print statement")}</button></div></div>
+   <div className="no-print flex flex-col gap-3 border-t bg-[var(--surface-secondary)] p-4 sm:flex-row sm:items-center sm:justify-between"><span className="text-xs text-[var(--text-muted)]">{t("Statement period")}: {from} — {to}</span><div className="flex flex-wrap gap-2"><button className="btn-secondary" onClick={onClose}>{t("Close")}</button><button className="btn-secondary !border-[#25D366] !text-[#128C4A]" onClick={sendWhatsApp}><MessageCircle/>{t("Send on WhatsApp")}</button><button className="btn-primary" onClick={printStatement}><Printer/>{t("Print statement")}</button></div></div>
    <StatementPrint client={client} from={from} to={to} opening={opening} bought={totalBought} paid={totalPaid} closing={closing} days={days} lines={lines}/>
   </div>
  </div>;

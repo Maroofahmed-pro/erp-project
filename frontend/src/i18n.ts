@@ -42,7 +42,7 @@ Object.assign(urPages,{
  ,"No purchases found in this date range.":"اس مدت میں کوئی خریداری نہیں ملی۔"
  ,"Statement period":"تفصیل کی مدت"
  ,"Close":"بند کریں"
- ,"Print statement":"تفصیل پرنٹ کریں"
+ ,"Print statement":"تفصیل پرنٹ کریں","Send on WhatsApp":"واٹس ایپ پر بھیجیں","A valid buyer phone number is required":"خریدار کا درست فون نمبر ضروری ہے"
  ,"Customer statement":"خریدار کے کھاتے کی تفصیل"
  ,"View account activity":"کھاتے کی سرگرمی دیکھیں"
  ,"Review purchases and payments for one day.":"ایک دن کی خریداری اور ادائیگیاں دیکھیں۔"
