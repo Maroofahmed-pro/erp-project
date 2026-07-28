@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-only-change-this-key-before-production-2026-erp")
 DEBUG = os.getenv("DJANGO_DEBUG", "1") == "1"
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
@@ -50,7 +50,8 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Karachi"
 USE_I18N = True
 USE_TZ = True
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "core.User"
 CORS_ALLOWED_ORIGINS = os.getenv(
