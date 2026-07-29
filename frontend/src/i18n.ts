@@ -52,4 +52,88 @@ Object.assign(urPages,{
  ,"Select date":"تاریخ منتخب کریں"
  ,"Select range":"مدت منتخب کریں"
  });
+Object.assign(urPages,{
+ "Pakistan produce business platform":"پاکستانی اجناس کا کاروباری پلیٹ فارم",
+ "Fresh produce.":"تازہ اجناس۔","Clear business control.":"کاروبار پر مکمل کنٹرول۔",
+ "Manage purchases, recovery, inventory and expenses from one secure Sabzi Mandi workspace.":"خریداری، ریکوری، انوینٹری اور اخراجات ایک محفوظ سبزی منڈی نظام سے چلائیں۔",
+ "Business access":"کاروباری رسائی","Ledger clarity":"شفاف کھاتہ","Local accounting":"مقامی حساب کتاب",
+ "Secure ERP access · Business data remains protected":"محفوظ ای آر پی رسائی · کاروباری ڈیٹا محفوظ رہتا ہے",
+ "English":"انگریزی","Toggle password visibility":"پاس ورڈ دکھائیں یا چھپائیں","Toggle theme":"تھیم تبدیل کریں",
+ "Dashboard date":"ڈیش بورڈ کی تاریخ","Summarize":"خلاصہ دیکھیں","Business Performance":"کاروباری کارکردگی",
+ "Performance report":"کارکردگی رپورٹ","Choose your reporting period":"رپورٹ کی مدت منتخب کریں",
+ "Debit / Bills":"ڈیبٹ / بل","Recovery":"ریکوری","Cash in Hand":"دستی نقدی",
+ "Daily Cash Movement":"روزانہ نقدی کی نقل و حرکت","Recovery compared with operating expenses":"ریکوری کا کاروباری اخراجات سے موازنہ",
+ "Expense Breakdown":"اخراجات کی تفصیل","Where money was spent":"رقم کہاں خرچ ہوئی","Total expenses":"کل اخراجات",
+ "Business Health":"کاروباری حالت","Key indicators for the selected range":"منتخب مدت کے اہم اشاریے",
+ "Collection Rate":"وصولی کی شرح","Closing Inventory":"اختتامی انوینٹری","Profit Margin":"منافع کی شرح","Loss Margin":"نقصان کی شرح",
+ "Positive cash result":"مثبت نقد نتیجہ","Negative cash result":"منفی نقد نتیجہ",
+ "Quick actions":"فوری کارروائیاں","Create entries and open daily workflows":"اندراج کریں اور روزانہ کے کام کھولیں",
+ "Create produce lot":"اجناس کی لاٹ بنائیں","Record client cash":"کلائنٹ کی رقم درج کریں","Open new account":"نیا اکاؤنٹ کھولیں",
+ "Record operating cost":"کاروباری خرچ درج کریں","Correct stock level":"اسٹاک کی مقدار درست کریں","Analyze performance":"کارکردگی کا تجزیہ کریں",
+ "Purchase activity":"خریداری کی سرگرمی","Explore buyer transactions and products sold.":"خریدار کے لین دین اور فروخت شدہ اشیاء دیکھیں۔",
+ "Selected date":"منتخب تاریخ","All history":"تمام سابقہ ریکارڈ","Find a buyer...":"خریدار تلاش کریں...",
+ "Buyers":"خریدار","Combined value":"مجموعی قیمت","Complete purchase details":"خریداری کی مکمل تفصیل",
+ "transaction":"لین دین","transactions":"لین دین","product":"شے","products":"اشیاء","Mixed":"مخلوط",
+ "No purchase activity found":"خریداری کی کوئی سرگرمی نہیں ملی","No purchases were recorded on the selected date.":"منتخب تاریخ پر کوئی خریداری درج نہیں ہوئی۔",
+ "Try a different buyer name.":"خریدار کا دوسرا نام آزمائیں۔","Open product list":"اشیاء کی فہرست کھولیں",
+ "Use a value from":"اس مقدار سے استعمال کریں","to":"تا","available":"دستیاب",
+ "Inventory items":"انوینٹری اشیاء","Monitor stock, valuation and reorder thresholds.":"اسٹاک، قیمت اور دوبارہ آرڈر کی حدود دیکھیں۔",
+ "Search stock...":"اسٹاک تلاش کریں...","Current":"موجودہ","Minimum":"کم از کم","Rate":"ریٹ",
+ "Update":"تبدیل کریں","Update item":"آئٹم تبدیل کریں","Delete item":"آئٹم حذف کریں","Urdu name":"اردو نام",
+ "Current stock":"موجودہ اسٹاک","Minimum stock":"کم از کم اسٹاک","Active inventory item":"فعال انوینٹری آئٹم",
+ "Inventory item updated":"انوینٹری آئٹم تبدیل ہو گیا","Inventory item added":"انوینٹری آئٹم شامل ہو گیا",
+ "Daily operating costs and payments.":"روزانہ کاروباری اخراجات اور ادائیگیاں۔",
+ "Expense date":"خرچ کی تاریخ","Payee":"وصول کنندہ","Add Expense":"خرچ شامل کریں",
+ "No expenses found":"کوئی خرچ نہیں ملا","Expense updated":"خرچ تبدیل ہو گیا","Expense added":"خرچ شامل ہو گیا",
+ "Financial and operational insights for better mandi decisions.":"بہتر منڈی فیصلوں کے لیے مالی اور کاروباری معلومات۔",
+ "Purchase report":"خریداری رپورٹ","Recovery report":"ریکوری رپورٹ","Client ledger":"کلائنٹ کھاتہ",
+ "Outstanding report":"بقایا رپورٹ","Inventory report":"انوینٹری رپورٹ","Expense report":"اخراجات رپورٹ",
+ "Daily summary":"روزانہ خلاصہ","Monthly summary":"ماہانہ خلاصہ","Open report":"رپورٹ کھولیں",
+ "All reports":"تمام رپورٹس","How to use:":"استعمال کا طریقہ:","Search records":"ریکارڈ تلاش کریں",
+ "Search name, category or status...":"نام، قسم یا حالت تلاش کریں...","Report period":"رپورٹ کی مدت",
+ "Quick period:":"فوری مدت:","Last 7 days":"گزشتہ 7 دن","Activity overview":"سرگرمی کا جائزہ",
+ "Value grouped across the latest visible records.":"نظر آنے والے تازہ ریکارڈز کے مطابق مجموعی قیمت۔",
+ "Detailed records":"تفصیلی ریکارڈ","Current position":"موجودہ صورتحال","Category / Detail":"قسم / تفصیل",
+ "Status / Reference":"حالت / حوالہ","No matching report data":"متعلقہ رپورٹ ڈیٹا نہیں ملا",
+ "Try another date period or clear the search text.":"دوسری مدت منتخب کریں یا تلاش صاف کریں۔",
+ "ERP access and responsibility assignments.":"ای آر پی رسائی اور ذمہ داریوں کی تقسیم۔",
+ "Total users":"کل صارفین","Administrators":"منتظمین","Active roles":"فعال کردار",
+ "Configure the ERP workspace.":"ای آر پی نظام کی ترتیب کریں۔","Business profile":"کاروباری پروفائل",
+ "Receipt and report defaults.":"رسید اور رپورٹ کی بنیادی ترتیبات۔","Business name":"کاروبار کا نام",
+ "Market address":"منڈی کا پتہ","Currency":"کرنسی","Default unit":"بنیادی اکائی","Save settings":"ترتیبات محفوظ کریں",
+ "Need assistance?":"مدد درکار ہے؟","Contact your system administrator for account, data or access support.":"اکاؤنٹ، ڈیٹا یا رسائی کی مدد کے لیے نظام کے منتظم سے رابطہ کریں۔",
+ "Print data":"ڈیٹا پرنٹ کریں","Print / Save PDF":"پرنٹ / پی ڈی ایف محفوظ کریں","Close":"بند کریں",
+ "No phone":"فون موجود نہیں","No address":"پتہ موجود نہیں","No notes":"کوئی نوٹ نہیں",
+ "Update client":"کلائنٹ تبدیل کریں","Client updated":"کلائنٹ تبدیل ہو گیا","Client added":"کلائنٹ شامل ہو گیا",
+ "View":"دیکھیں","Edit":"ترمیم","Save":"محفوظ کریں","Search...":"تلاش کریں..."
+ ,"Choose the question you want to answer":"وہ سوال منتخب کریں جس کا جواب آپ چاہتے ہیں"
+ ,"Each report includes filters, summary totals, charts, detailed records and export options.":"ہر رپورٹ میں فلٹر، مجموعی خلاصہ، چارٹس، تفصیلی ریکارڈ اور برآمد کے اختیارات شامل ہیں۔"
+ ,"Review buyer purchases, invoices and product value.":"خریدار کی خریداری، بل اور اشیاء کی قیمت دیکھیں۔"
+ ,"Track collections and see who paid during a period.":"مدت کے دوران وصولیاں اور ادائیگی کرنے والے خریدار دیکھیں۔"
+ ,"Inspect account debits, credits and running activity.":"اکاؤنٹ کے ڈیبٹ، کریڈٹ اور جاری سرگرمی دیکھیں۔"
+ ,"Identify buyers with unpaid balances and credit exposure.":"غیر ادا شدہ بقایا اور کریڈٹ والے خریدار شناخت کریں۔"
+ ,"Understand stock value and items requiring attention.":"اسٹاک کی قیمت اور توجہ طلب اشیاء دیکھیں۔"
+ ,"Analyze operating costs by category, date and payee.":"قسم، تاریخ اور وصول کنندہ کے لحاظ سے اخراجات کا تجزیہ کریں۔"
+ ,"See purchases, recoveries and expenses for one day.":"ایک دن کی خریداری، ریکوری اور اخراجات دیکھیں۔"
+ ,"Review this month’s financial and operational activity.":"اس ماہ کی مالی اور کاروباری سرگرمی دیکھیں۔"
+ ,"Invoices · products · value":"بل · اشیاء · قیمت","Payments · buyers · dates":"ادائیگیاں · خریدار · تاریخیں"
+ ,"Debits · credits · accounts":"ڈیبٹ · کریڈٹ · اکاؤنٹس","Balances · limits · status":"بقایا · حدود · حالت"
+ ,"Stock · valuation · alerts":"اسٹاک · قیمت · انتباہات","Costs · categories · methods":"اخراجات · اقسام · طریقے"
+ ,"Today · cash flow · activity":"آج · نقد بہاؤ · سرگرمی","Trends · totals · performance":"رجحانات · کل · کارکردگی"
+ ,"Guidance for your Sabzi Mandi ERP workspace.":"سبزی منڈی ای آر پی کے استعمال کی رہنمائی۔"
+ ,"Contact your ERP administrator for account access, data corrections, or operational support.":"اکاؤنٹ رسائی، ڈیٹا کی درستگی یا کاروباری مدد کے لیے ای آر پی منتظم سے رابطہ کریں۔"
+ ,"No contact":"رابطہ موجود نہیں","Settings saved locally":"ترتیبات مقامی طور پر محفوظ ہو گئیں"
+ ,"PKR — Pakistani Rupee":"پاکستانی روپیہ","crate":"کریٹ","bag":"بوری","piece":"عدد"
+ ,"General":"عام","Labour / Wages":"مزدوری / اجرت","Loading / Unloading":"لوڈنگ / اَن لوڈنگ"
+ ,"Transport / Freight":"ٹرانسپورٹ / مال برداری","Market Fee":"منڈی فیس","Commission":"کمیشن","Rent":"کرایہ"
+ ,"Electricity / Utilities":"بجلی / یوٹیلیٹیز","Fuel":"ایندھن","Repairs / Maintenance":"مرمت / دیکھ بھال"
+ ,"Packaging":"پیکنگ","Food / Refreshment":"کھانا / تواضع","Office Supplies":"دفتری سامان","Salaries":"تنخواہیں"
+ ,"Taxes / Government Fee":"ٹیکس / سرکاری فیس","Cleaning":"صفائی","Security":"سیکیورٹی","Bank Charges":"بینک چارجز"
+ ,"Miscellaneous":"متفرق","Expense deleted":"خرچ حذف ہو گیا","No expenses for this day":"اس دن کوئی خرچ نہیں"
+ ,"Choose another date or add today’s first expense.":"دوسری تاریخ منتخب کریں یا آج کا پہلا خرچ شامل کریں۔"
+ ,"Delete expense":"خرچ حذف کریں","No matching category. Continue typing to use your custom category.":"مماثل قسم نہیں ملی؛ اپنی قسم لکھنا جاری رکھیں۔"
+ ,"Notifications":"اطلاعات","Search pages":"صفحات تلاش کریں","Open an ERP module quickly":"ای آر پی کا حصہ فوراً کھولیں"
+ ,"No matching page found":"متعلقہ صفحہ نہیں ملا","Low stock needs attention":"کم اسٹاک پر توجہ درکار ہے"
+ ,"Everything looks good":"سب کچھ درست ہے","No notifications":"کوئی اطلاع نہیں","remaining":"باقی"
+ });
 const lang=localStorage.getItem("lang")||"en";void i18n.use(initReactI18next).init({resources:{en:{translation:en},ur:{translation:{...ur,...urPages}}},lng:lang,fallbackLng:"en",interpolation:{escapeValue:false}});document.documentElement.dir=lang==="ur"?"rtl":"ltr";document.documentElement.lang=lang;export default i18n;
