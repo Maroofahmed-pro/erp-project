@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "./api";
-import { Client, Expense, InventoryItem, LedgerEntry, Purchase, User, unwrap } from "./types";
+import { Client, Expense, InventoryItem, LedgerEntry, Purchase, User, Vendor, VendorEntry, VendorPayment, unwrap } from "./types";
 const list = async <T,>(url:string) => unwrap<T>((await api.get(url)).data);
 export const useClients = () => useQuery({queryKey:["clients"], queryFn:()=>list<Client>("/clients/")});
 export const useInventory = () => useQuery({queryKey:["inventory"], queryFn:()=>list<InventoryItem>("/inventory/")});
@@ -8,3 +8,6 @@ export const usePurchases = () => useQuery({queryKey:["purchases"], queryFn:()=>
 export const useLedger = () => useQuery({queryKey:["ledger"], queryFn:()=>list<LedgerEntry>("/ledger/")});
 export const useExpenses = () => useQuery({queryKey:["expenses"], queryFn:()=>list<Expense>("/expenses/")});
 export const useMe = () => useQuery({queryKey:["me"], queryFn:async()=>(await api.get<User>("/me/")).data});
+export const useVendors = () => useQuery({queryKey:["vendors"], queryFn:()=>list<Vendor>("/vendors/")});
+export const useVendorEntries = () => useQuery({queryKey:["vendor-entries"], queryFn:()=>list<VendorEntry>("/vendor-entries/")});
+export const useVendorPayments = () => useQuery({queryKey:["vendor-payments"], queryFn:()=>list<VendorPayment>("/vendor-payments/")});

@@ -5,5 +5,9 @@ export interface Purchase { id:number; client:number; client_name:string; purcha
 export interface LedgerEntry { id:number; client:number; client_name:string; entry_type:string; amount:string; entry_date:string; description:string }
 export interface Expense { id:number; category:string; title:string; amount:string; expense_date:string; paid_to:string; payment_method:string; notes:string }
 export interface User { id:number; username:string; first_name:string; last_name:string; email:string; phone:string; role:string; language:string }
+export interface Vendor { id:number; name:string; name_ur:string; phone:string; address:string; city:string; category:string; credit_limit:string; opening_balance:string; balance:string; total_received:string; total_paid:string; is_active:boolean; notes:string; created_at?:string }
+export interface VendorEntry { id:number; vendor:number; vendor_name:string; entry_date:string; item_name:string; quantity:string; unit:string; rate:string; gross_amount:string; margin:string; deductions:string; vendor_amount:string; vehicle_number:string; reference_number:string; notes:string }
+export interface VendorDailyExpense { id:number; vendor:number; vendor_name:string; expense_date:string; commission_percentage:string; commission_amount:string; freight:string; labor:string; cash:string; previous:string; market_fee:string; total_amount:string; total_deductions:string; final_amount:string }
+export interface VendorPayment { id:number; vendor:number; vendor_name:string; payment_date:string; item_name:string; total_amount:string; kiraya:string; mazdori:string; commission_percentage:string; commission_amount:string; amount:string; payment_method:string; reference_number:string; notes:string }
 export const unwrap = <T,>(data:T[]|{results:T[]}) => Array.isArray(data) ? data : data.results;
 export const money = (value:unknown) => `Rs ${Number(value || 0).toLocaleString("en-PK", {maximumFractionDigits:0})}`;

@@ -134,6 +134,6 @@ Object.assign(urPages,{
  ,"Delete expense":"خرچ حذف کریں","No matching category. Continue typing to use your custom category.":"مماثل قسم نہیں ملی؛ اپنی قسم لکھنا جاری رکھیں۔"
  ,"Notifications":"اطلاعات","Search pages":"صفحات تلاش کریں","Open an ERP module quickly":"ای آر پی کا حصہ فوراً کھولیں"
  ,"No matching page found":"متعلقہ صفحہ نہیں ملا","Low stock needs attention":"کم اسٹاک پر توجہ درکار ہے"
- ,"Everything looks good":"سب کچھ درست ہے","No notifications":"کوئی اطلاع نہیں","remaining":"باقی"
+ ,"Everything looks good":"سب کچھ درست ہے","No notifications":"کوئی اطلاع نہیں","remaining":"باقی","Vendors":"سپلائرز"
  });
 const lang=localStorage.getItem("lang")||"en";void i18n.use(initReactI18next).init({resources:{en:{translation:en},ur:{translation:{...ur,...urPages}}},lng:lang,fallbackLng:"en",interpolation:{escapeValue:false}});document.documentElement.dir=lang==="ur"?"rtl":"ltr";document.documentElement.lang=lang;export default i18n;

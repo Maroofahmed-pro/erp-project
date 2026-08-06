@@ -120,52 +120,50 @@ function BuyerHistory({client,endDate,purchases,ledger,onClose}:{client:Client;e
   window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`,"_blank","noopener,noreferrer");
  };
  const shareBillImage=async()=>{
-  const width=900,padding=45,rowHeight=38;
-  const itemHeight=mode==="range"?76:52;
-  const height=820+(mode==="range"?days.length*76+95:0)+(lines.length?110+lines.length*itemHeight:0);
+  const width=900,height=1600;
   const canvas=document.createElement("canvas");
   canvas.width=width;canvas.height=height;
   const ctx=canvas.getContext("2d");
   if(!ctx)return;
-  ctx.fillStyle="#fff";ctx.fillRect(0,0,width,height);
-  ctx.fillStyle="#111";
-  const font=(size:number,bold=false)=>{ctx.font=`${bold?"bold ":""}${size}px "Courier New", monospace`};
-  const center=(text:string,y:number,size=27,bold=false)=>{font(size,bold);ctx.textAlign="center";ctx.fillText(text,width/2,y)};
-  const left=(text:string,y:number,size=27,bold=false)=>{font(size,bold);ctx.textAlign="left";ctx.fillText(text,padding,y)};
-  const pair=(label:string,value:string,y:number,bold=false)=>{font(27,bold);ctx.textAlign="left";ctx.fillText(label,padding,y);ctx.textAlign="right";ctx.fillText(value,width-padding,y)};
-  const rule=(y:number)=>{ctx.save();ctx.setLineDash([8,5]);ctx.strokeStyle="#222";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(padding,y);ctx.lineTo(width-padding,y);ctx.stroke();ctx.restore()};
-  center("SHAFIQUE SHAIKH AHMED & SONS",62,30,true);
-  center("BUYER ACCOUNT STATEMENT",102,21,true);
-  center(new Date().toLocaleString("en-PK"),136,19);
-  rule(160);
-  left(`Buyer:  ${client.name}`,198,21,true);
-  left(`Phone:  ${client.phone||"—"}`,232,21);
-  left(periodText,266,21,true);
-  rule(286);
-  pair("Previous Debit",money(opening),326,true);
-  let y=350;
-  if(mode==="range"&&days.length){
-   rule(y);y+=36;center("DAILY SUMMARY",y,21,true);y+=22;rule(y);y+=34;
-   days.forEach(x=>{pair(x.date,money(x.balance),y,true);y+=rowHeight;left(`Purchase ${money(x.bought)} · Paid ${money(x.paid)}`,y,19);y+=rowHeight});
-  }
+  const template=await new Promise<HTMLImageElement>((resolve,reject)=>{const image=new window.Image();image.onload=()=>resolve(image);image.onerror=reject;image.src="/assets/bill-template-urdu.png"}).catch(()=>null);
+  if(!template)return toast(t("Unable to create bill image"),"error");
+  ctx.drawImage(template,0,0,width,height);
+  await document.fonts.ready;
+  const urduFont='"Noto Naskh Arabic", Arial, sans-serif';
+  const setFont=(size:number,bold=false)=>{ctx.font=`${bold?700:500} ${size}px ${urduFont}`;ctx.fillStyle="#111"};
+  const rtl=(text:string,x:number,y:number,size=28,bold=false)=>{setFont(size,bold);ctx.direction="rtl";ctx.textAlign="right";ctx.fillText(text,x,y)};
+  const amount=(value:number,x:number,y:number,size=26,bold=false)=>{ctx.direction="ltr";ctx.textAlign="right";ctx.font=`${bold?700:500} ${size}px Inter, Arial, sans-serif`;ctx.fillStyle="#111";ctx.fillText(`Rs ${value.toLocaleString("en-PK",{maximumFractionDigits:2})}`,x,y)};
+  const rule=(y:number)=>{ctx.strokeStyle="#444";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(70,y);ctx.lineTo(830,y);ctx.stroke()};
+  // Fill the pre-printed customer and date lines.
+  rtl(client.name,790,405,28,true);
+  ctx.direction="ltr";ctx.textAlign="left";setFont(23,true);ctx.fillText(from===to?from:`${from} تا ${to}`,90,405);
+  // A light panel keeps dynamic text clear while retaining the original watermark.
+  ctx.fillStyle="rgba(255,255,255,.86)";ctx.fillRect(62,445,776,800);
+  rtl("آج کی خریداری",815,495,34,true);rule(515);
   if(lines.length){
-   rule(y);y+=36;center("ITEM DETAILS",y,21,true);y+=22;rule(y);y+=32;
-   font(18,true);ctx.textAlign="left";ctx.fillText("PRODUCT",padding,y);ctx.textAlign="right";ctx.fillText("QTY",520,y);ctx.fillText("RATE",680,y);ctx.fillText("AMOUNT",width-padding,y);y+=30;rule(y);y+=34;
-   lines.forEach(x=>{
-    font(19,true);ctx.textAlign="left";ctx.fillText(x.item.item_name.slice(0,22),padding,y);
-    ctx.textAlign="right";ctx.fillText(`${x.item.quantity} ${x.item.unit}`,520,y);ctx.fillText(money(x.item.rate).replace("Rs ",""),680,y);ctx.fillText(money(x.item.total),width-padding,y);
+   rtl("خریدے ہوئے مال کا نام",815,555,27,true);
+   const available=440,rowHeight=Math.max(29,Math.min(43,Math.floor(available/lines.length)));
+   let y=600;
+   lines.forEach((x,index)=>{
+    const name=`${index+1}۔ ${x.item.item_name}`;
+    rtl(name,805,y,Math.min(25,rowHeight-5),true);
+    ctx.direction="ltr";ctx.textAlign="left";ctx.font=`500 ${Math.min(20,rowHeight-8)}px Inter, Arial, sans-serif`;ctx.fillStyle="#222";
+    ctx.fillText(`${x.item.quantity} ${x.item.unit} × ${money(x.item.rate)} = ${money(x.item.total)}`,88,y);
     y+=rowHeight;
-    if(mode==="range"){left(x.date,y,17);y+=rowHeight}
    });
-  }
-  rule(y);y+=55;
-  pair(billLabel,money(totalBought),y,true);y+=rowHeight;
-  pair("Previous Debit",money(opening),y);y+=rowHeight;
-  rule(y);y+=50;
-  pair("TOTAL DUE",money(totalDue),y,true);y+=rowHeight;
-  pair("Collected",money(totalPaid),y);y+=rowHeight;
-  pair("REMAINING",money(closing),y,true);
-  y+=70;center("Thank you for your business",y,25);
+  }else rtl("آج کوئی مال نہیں خریدا گیا",805,600,27);
+  rule(1060);
+  const summary=[
+   [mode==="day"?"آج کے بل کی کل رقم":"منتخب مدت کے بل کی کل رقم",totalBought,true],
+   ["پچھلا بقایا",opening,false],
+   ["کل واجب الادا رقم",totalDue,true],
+   ["جمع شدہ رقم",totalPaid,false],
+   ["باقی بقایا",closing,true],
+  ] as const;
+  let summaryY=1105;
+  summary.forEach(([label,value,bold])=>{rtl(label,805,summaryY,26,bold);amount(value,390,summaryY,24,bold);summaryY+=52});
+  rtl(`موبائل: ${client.phone||"—"}`,805,1395,23);
+  rtl("آپ کی خریداری کا شکریہ",805,1450,27,true);
   const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/png",0.95));
   if(!blob)return toast(t("Unable to create bill image"),"error");
   const file=new File([blob],`bill-${client.name.replace(/[^\w-]+/g,"-")}-${from}.png`,{type:"image/png"});
