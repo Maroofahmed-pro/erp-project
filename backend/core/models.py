@@ -83,3 +83,73 @@ class Expense(TimeStampedModel):
     payment_method = models.CharField(max_length=50, blank=True)
     notes = models.TextField(blank=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+
+class Vendor(TimeStampedModel):
+    name = models.CharField(max_length=150)
+    name_ur = models.CharField(max_length=150, blank=True)
+    phone = models.CharField(max_length=30, blank=True)
+    address = models.TextField(blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    category = models.CharField(max_length=50, blank=True, default="Retailer")
+    credit_limit = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    opening_balance = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    is_active = models.BooleanField(default=True)
+    notes = models.TextField(blank=True)
+    def __str__(self): return self.name
+    @property
+    def balance(self):
+        supplied = self.daily_entries.aggregate(v=models.Sum("vendor_amount"))["v"] or Decimal("0")
+        expenses = self.daily_expenses.aggregate(v=models.Sum("total_deductions"))["v"] or Decimal("0")
+        paid = self.payments.aggregate(v=models.Sum("amount"))["v"] or Decimal("0")
+        return self.opening_balance + supplied - expenses - paid
+
+class VendorDailyEntry(TimeStampedModel):
+    vendor = models.ForeignKey(Vendor, related_name="daily_entries", on_delete=models.CASCADE)
+    entry_date = models.DateField()
+    item_name = models.CharField(max_length=150)
+    quantity = models.DecimalField(max_digits=14, decimal_places=2)
+    unit = models.CharField(max_length=30, default="bags")
+    rate = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    gross_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    margin = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    deductions = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    vendor_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    vehicle_number = models.CharField(max_length=80, blank=True)
+    reference_number = models.CharField(max_length=80, blank=True)
+    notes = models.TextField(blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+
+class VendorDailyExpense(TimeStampedModel):
+    vendor = models.ForeignKey(Vendor, related_name="daily_expenses", on_delete=models.CASCADE)
+    expense_date = models.DateField()
+    commission_percentage = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    commission_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    freight = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    labor = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    cash = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    previous = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    market_fee = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    total_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    total_deductions = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    final_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["vendor", "expense_date"], name="unique_vendor_daily_expense")
+        ]
+
+class VendorPayment(TimeStampedModel):
+    vendor = models.ForeignKey(Vendor, related_name="payments", on_delete=models.CASCADE)
+    payment_date = models.DateField()
+    item_name = models.CharField(max_length=160, blank=True)
+    total_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    kiraya = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    mazdori = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    commission_percentage = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    commission_amount = models.DecimalField(max_digits=14, decimal_places=2, default=0)
+    amount = models.DecimalField(max_digits=14, decimal_places=2)
+    payment_method = models.CharField(max_length=50, default="cash")
+    reference_number = models.CharField(max_length=80, blank=True)
+    notes = models.TextField(blank=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)

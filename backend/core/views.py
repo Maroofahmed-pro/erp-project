@@ -4,10 +4,12 @@ from django.utils.timezone import localdate
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Client, InventoryItem, Purchase, LedgerEntry, Expense, User
+from .models import Client, InventoryItem, Purchase, LedgerEntry, Expense, User, Vendor, VendorDailyEntry, VendorDailyExpense, VendorPayment
 from .serializers import (
     ClientSerializer, InventoryItemSerializer, PurchaseSerializer,
-    LedgerEntrySerializer, ExpenseSerializer, UserSerializer
+    LedgerEntrySerializer, ExpenseSerializer, UserSerializer, VendorSerializer,
+    VendorDailyEntrySerializer, VendorDailyExpenseSerializer, VendorPaymentSerializer,
+    refresh_vendor_daily_expense
 )
 
 class BaseModelViewSet(viewsets.ModelViewSet):
@@ -41,6 +43,35 @@ class LedgerViewSet(BaseModelViewSet):
 class ExpenseViewSet(BaseModelViewSet):
     queryset = Expense.objects.all().order_by("-expense_date","-id")
     serializer_class = ExpenseSerializer
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+class VendorViewSet(BaseModelViewSet):
+    queryset = Vendor.objects.all().order_by("name")
+    serializer_class = VendorSerializer
+
+class VendorDailyEntryViewSet(BaseModelViewSet):
+    queryset = VendorDailyEntry.objects.select_related("vendor").all().order_by("-entry_date","-id")
+    serializer_class = VendorDailyEntrySerializer
+    filterset_fields = ["vendor","entry_date"]
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+    def perform_destroy(self, instance):
+        vendor, entry_date = instance.vendor, instance.entry_date
+        instance.delete()
+        refresh_vendor_daily_expense(vendor, entry_date)
+
+class VendorDailyExpenseViewSet(BaseModelViewSet):
+    queryset = VendorDailyExpense.objects.select_related("vendor").all().order_by("-expense_date", "-id")
+    serializer_class = VendorDailyExpenseSerializer
+    filterset_fields = ["vendor", "expense_date"]
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+class VendorPaymentViewSet(BaseModelViewSet):
+    queryset = VendorPayment.objects.select_related("vendor").all().order_by("-payment_date","-id")
+    serializer_class = VendorPaymentSerializer
+    filterset_fields = ["vendor","payment_date"]
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
