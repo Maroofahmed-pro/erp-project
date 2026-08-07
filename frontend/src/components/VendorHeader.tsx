@@ -9,7 +9,7 @@ export function VendorHeader({title,subtitle,backTo,children}:{title:string;subt
     <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-white/12 ring-1 ring-white/15"><Store className="size-5"/></span>
     <div><h1 className="text-lg font-bold">{title}</h1><p className="mt-0.5 text-[11px] text-green-100">{subtitle}</p></div>
    </div>
-   {children&&<div className="flex flex-wrap items-center gap-2">{children}</div>}
+   {children&&<div className="vendor-header-actions grid grid-cols-3 items-center gap-2 sm:flex sm:flex-wrap">{children}</div>}
   </div>
  </section>
 }

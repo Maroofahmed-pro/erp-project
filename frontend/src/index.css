@@ -164,7 +164,7 @@ html.dark header.sticky.hidden{background:rgba(23,32,27,.88)!important}
 .vendor-detail-page .table-wrap{box-shadow:0 14px 38px rgba(14,42,27,.075)}
 html.dark .vendor-summary-card{background:linear-gradient(145deg,#1b2720,#141d18)}
 html.dark .vendor-detail-page>section.card.overflow-hidden:first-of-type{background:linear-gradient(115deg,#173126,#17201b 58%,#172637)}
-.vendor-bill{font-family:Arial,"Noto Nastaliq Urdu","Noto Naskh Arabic",sans-serif}
+.vendor-bill{aspect-ratio:940/1672!important;max-width:940px;font-family:Arial,"Noto Nastaliq Urdu","Noto Naskh Arabic",sans-serif}
 .vendor-bill>span{overflow:visible!important;line-height:1.65!important;padding-block:2px;white-space:nowrap}
 .vendor-detail-page .table-wrap>div:first-child>div:nth-child(2)>span:first-child{display:none}
 .vendor-detail-page .table-wrap>div:first-child>div:has(input[placeholder="Search item or reference..."]){display:none}
@@ -199,13 +199,26 @@ html.dark .vendor-detail-page>section.card.overflow-hidden:first-of-type{backgro
  body.print-vendor-bill>.created-vendor-bill .bill-table th,body.print-vendor-bill>.created-vendor-bill .bill-table td{padding:9px 7px!important}
 }
 @media(max-width:767px){
+ .vendor-page,.vendor-detail-page{max-width:100%;overflow-x:clip}
+ .vendor-page{margin-inline:-8px}
+ .vendor-page>*{max-width:100%;min-width:0}
+ .vendor-directory,.vendor-mobile-list,.vendor-mobile-list>article{width:100%;max-width:100%;min-width:0}
+ .vendor-header-actions{width:100%}
+ .vendor-header-actions>button{min-width:0}
  .vendor-summary-card{min-height:88px;padding:12px!important;align-items:center}
  .vendor-summary-card>span:first-child{width:36px;height:36px;border-radius:9px}
  .vendor-directory{border-radius:15px!important}
  .vendor-directory>div:first-child{border-radius:15px 15px 0 0}
  .vendor-detail-page>section.card.overflow-hidden:first-of-type{padding:18px!important}
- .vendor-detail-page>nav{margin-inline:-2px;border-radius:12px}
- .vendor-detail-page>nav button{padding-inline:11px}
+ .vendor-detail-page>nav{position:sticky;top:4px;z-index:20;margin-inline:0;border-radius:14px;padding:10px}
+ .vendor-detail-page>nav>div:first-child{padding-inline:2px}
+ .vendor-detail-page>nav>div:nth-child(2){order:3;width:100%;scrollbar-width:none}
+ .vendor-detail-page>nav>div:nth-child(2)::-webkit-scrollbar{display:none}
+ .vendor-detail-page>nav>div:nth-child(2) button{flex:1;justify-content:center;padding-inline:10px}
+ .vendor-detail-page>nav>button{width:100%}
+ .vendor-detail-page .table-wrap>div:first-child{padding:12px}
+ .vendor-detail-page .table-wrap>div:first-child>.btn-primary,
+ .vendor-detail-page .table-wrap>div:first-child>.btn-secondary{width:100%;justify-content:center}
  .vendor-bill{border-radius:12px}
  .bill-letterhead{padding:18px!important}
  .bill-letterhead>div{grid-template-columns:1fr auto!important}

@@ -5,7 +5,10 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .models import Client, Expense, InventoryItem, LedgerEntry, Purchase, User
+from .models import (
+    Client, Expense, InventoryItem, LedgerEntry, Purchase, User, Vendor,
+    VendorDailyEntry, VendorDailyExpense, VendorPayment,
+)
 
 
 class ERPApiEndToEndTests(APITestCase):
@@ -51,6 +54,31 @@ class ERPApiEndToEndTests(APITestCase):
         self.assertEqual(self.item.current_stock, Decimal("90"))
         entry = LedgerEntry.objects.get(purchase_id=response.data["id"])
         self.assertEqual(entry.amount, Decimal("750"))
+
+    def test_duplicate_inventory_lines_decrement_the_full_quantity(self):
+        payload = self.purchase_payload()
+        payload["items"].append({
+            "inventory_item": self.item.id, "item_name": self.item.name,
+            "unit": "kg", "rate": "80", "quantity": "15",
+        })
+        response = self.client.post("/api/purchases/", payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED, response.data)
+        self.item.refresh_from_db()
+        self.assertEqual(self.item.current_stock, Decimal("75"))
+        self.assertEqual(Decimal(response.data["grand_total"]), Decimal("1950"))
+
+    def test_duplicate_inventory_lines_validate_combined_stock(self):
+        payload = self.purchase_payload()
+        payload["items"][0]["quantity"] = "60"
+        payload["items"].append({
+            "inventory_item": self.item.id, "item_name": self.item.name,
+            "unit": "kg", "rate": "75", "quantity": "50",
+        })
+        response = self.client.post("/api/purchases/", payload, format="json")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.item.refresh_from_db()
+        self.assertEqual(self.item.current_stock, Decimal("100"))
+        self.assertFalse(Purchase.objects.exists())
 
     def test_purchase_rejects_empty_items(self):
         response = self.client.post("/api/purchases/", self.purchase_payload(items=[]), format="json")
@@ -114,6 +142,15 @@ class ERPApiEndToEndTests(APITestCase):
         self.assertEqual(self.item.current_stock, Decimal("90"))
         self.assertTrue(LedgerEntry.objects.filter(purchase_id=purchase_id).exists())
 
+    def test_completed_purchase_cannot_be_deleted(self):
+        response = self.client.post("/api/purchases/", self.purchase_payload(), format="json")
+        purchase_id = response.data["id"]
+        response = self.client.delete(f"/api/purchases/{purchase_id}/")
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.item.refresh_from_db()
+        self.assertEqual(self.item.current_stock, Decimal("90"))
+        self.assertTrue(Purchase.objects.filter(pk=purchase_id).exists())
+
     def test_future_business_dates_are_rejected(self):
         future = (date.today() + timedelta(days=1)).isoformat()
         purchase = self.client.post(
@@ -149,3 +186,38 @@ class ERPApiEndToEndTests(APITestCase):
         response = self.client.delete(f"/api/clients/{self.client_record.id}/")
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertTrue(Client.objects.filter(id=self.client_record.id).exists())
+
+    def test_client_list_balance_uses_one_business_query(self):
+        for index in range(5):
+            client = Client.objects.create(name=f"Buyer {index}", opening_balance=Decimal("100"))
+            LedgerEntry.objects.create(
+                client=client, entry_type="debit", amount=Decimal("50"), entry_date=date.today()
+            )
+        with self.assertNumQueries(2):  # JWT user lookup + annotated client list
+            response = self.client.get("/api/clients/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            next(item["balance"] for item in response.data if item["name"] == "Buyer 0"),
+            Decimal("150.00"),
+        )
+
+    def test_vendor_list_totals_are_correct_in_one_business_query(self):
+        vendor = Vendor.objects.create(name="Fast Vendor", opening_balance=Decimal("100"))
+        VendorDailyEntry.objects.create(
+            vendor=vendor, entry_date=date.today(), item_name="Tomato", quantity=Decimal("1"),
+            rate=Decimal("500"), gross_amount=Decimal("500"), vendor_amount=Decimal("500"),
+        )
+        VendorDailyExpense.objects.create(
+            vendor=vendor, expense_date=date.today(), total_amount=Decimal("500"),
+            total_deductions=Decimal("50"), final_amount=Decimal("450"),
+        )
+        VendorPayment.objects.create(
+            vendor=vendor, payment_date=date.today(), amount=Decimal("200")
+        )
+        with self.assertNumQueries(2):  # JWT user lookup + vendor list with scalar aggregates
+            response = self.client.get("/api/vendors/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        row = next(item for item in response.data if item["id"] == vendor.id)
+        self.assertEqual(row["total_received"], Decimal("500"))
+        self.assertEqual(row["total_paid"], Decimal("200"))
+        self.assertEqual(row["balance"], Decimal("350"))

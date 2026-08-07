@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 from django.db import transaction
 from django.db.models import Sum
 from django.utils.timezone import localdate
@@ -24,7 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["id","username","first_name","last_name","email","phone","role","language"]
 
 class ClientSerializer(serializers.ModelSerializer):
-    balance = serializers.DecimalField(max_digits=14, decimal_places=2, read_only=True)
+    balance = serializers.SerializerMethodField()
     class Meta:
         model = Client
         fields = "__all__"
@@ -32,6 +33,10 @@ class ClientSerializer(serializers.ModelSerializer):
             "opening_balance": {"min_value": Decimal("0")},
             "credit_limit": {"min_value": Decimal("0")},
         }
+    @extend_schema_field(serializers.DecimalField(max_digits=14, decimal_places=2))
+    def get_balance(self, obj):
+        ledger_total = getattr(obj, "_ledger_total", None)
+        return obj.opening_balance + ledger_total if ledger_total is not None else obj.balance
 
 class InventoryItemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -80,20 +85,38 @@ class PurchaseSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def create(self, validated_data):
         items = validated_data.pop("items")
+        requested_stock = {}
+        for item in items:
+            inventory_item = item.get("inventory_item")
+            if inventory_item:
+                requested_stock[inventory_item.pk] = (
+                    requested_stock.get(inventory_item.pk, Decimal("0")) + item["quantity"]
+                )
+        locked_inventory = {
+            item.pk: item
+            for item in InventoryItem.objects.select_for_update().filter(pk__in=requested_stock)
+        }
+        if validated_data.get("status", "completed") == "completed":
+            for inventory_id, quantity in requested_stock.items():
+                inventory_item = locked_inventory[inventory_id]
+                if inventory_item.current_stock < quantity:
+                    raise serializers.ValidationError({
+                        "items": (
+                            f"Insufficient stock for {inventory_item.name}. "
+                            f"Available: {inventory_item.current_stock} {inventory_item.unit}."
+                        )
+                    })
         purchase = Purchase.objects.create(created_by=self.context["request"].user, **validated_data)
         total = 0
         for item in items:
             line_total = item["rate"] * item["quantity"]
             total += line_total
             PurchaseItem.objects.create(purchase=purchase, total=line_total, **item)
-            inv = item.get("inventory_item")
-            if inv and purchase.status == "completed":
-                if inv.current_stock < item["quantity"]:
-                    raise serializers.ValidationError({
-                        "items": f"Insufficient stock for {inv.name}. Available: {inv.current_stock} {inv.unit}."
-                    })
-                inv.current_stock -= item["quantity"]
-                inv.save(update_fields=["current_stock"])
+        if purchase.status == "completed":
+            for inventory_id, quantity in requested_stock.items():
+                inventory_item = locked_inventory[inventory_id]
+                inventory_item.current_stock -= quantity
+                inventory_item.save(update_fields=["current_stock"])
         purchase.grand_total = total
         purchase.save(update_fields=["grand_total"])
         if purchase.status == "completed":
@@ -148,17 +171,29 @@ class ExpenseSerializer(serializers.ModelSerializer):
         return value
 
 class VendorSerializer(serializers.ModelSerializer):
-    balance = serializers.DecimalField(max_digits=14, decimal_places=2, read_only=True)
+    balance = serializers.SerializerMethodField()
     total_received = serializers.SerializerMethodField()
     total_paid = serializers.SerializerMethodField()
     class Meta:
         model = Vendor
         fields = "__all__"
         extra_kwargs = {"opening_balance": {"min_value": Decimal("0")}}
+    @extend_schema_field(serializers.DecimalField(max_digits=14, decimal_places=2))
     def get_total_received(self, obj):
-        return obj.daily_entries.aggregate(v=Sum("vendor_amount"))["v"] or Decimal("0")
+        annotated = getattr(obj, "_total_received", None)
+        return annotated if annotated is not None else obj.daily_entries.aggregate(v=Sum("vendor_amount"))["v"] or Decimal("0")
+    @extend_schema_field(serializers.DecimalField(max_digits=14, decimal_places=2))
     def get_total_paid(self, obj):
-        return obj.payments.aggregate(v=Sum("amount"))["v"] or Decimal("0")
+        annotated = getattr(obj, "_total_paid", None)
+        return annotated if annotated is not None else obj.payments.aggregate(v=Sum("amount"))["v"] or Decimal("0")
+    @extend_schema_field(serializers.DecimalField(max_digits=14, decimal_places=2))
+    def get_balance(self, obj):
+        received = self.get_total_received(obj)
+        paid = self.get_total_paid(obj)
+        expenses = getattr(obj, "_total_expenses", None)
+        if expenses is None:
+            expenses = obj.daily_expenses.aggregate(v=Sum("total_deductions"))["v"] or Decimal("0")
+        return obj.opening_balance + received - expenses - paid
 
 class VendorDailyEntrySerializer(serializers.ModelSerializer):
     vendor_name = serializers.CharField(source="vendor.name", read_only=True)

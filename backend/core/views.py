@@ -1,4 +1,5 @@
-from django.db.models import F, Sum
+from django.db.models import DecimalField, F, OuterRef, Subquery, Sum, Value
+from django.db.models.functions import Coalesce
 from django.db.models.deletion import ProtectedError
 from django.utils.timezone import localdate
 from rest_framework import viewsets, permissions
@@ -16,7 +17,7 @@ class BaseModelViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 class ClientViewSet(BaseModelViewSet):
-    queryset = Client.objects.all().order_by("name")
+    queryset = Client.objects.annotate(_ledger_total=Sum("ledger_entries__amount", default=0)).order_by("name")
     serializer_class = ClientSerializer
     search_fields = ["name","phone"]
     def perform_destroy(self, instance):
@@ -33,6 +34,11 @@ class InventoryViewSet(BaseModelViewSet):
 class PurchaseViewSet(BaseModelViewSet):
     queryset = Purchase.objects.select_related("client").prefetch_related("items").all().order_by("-purchase_date","-id")
     serializer_class = PurchaseSerializer
+    def perform_destroy(self, instance):
+        if instance.status == "completed":
+            from rest_framework.exceptions import ValidationError
+            raise ValidationError("Completed purchases cannot be deleted because they affect stock and the ledger.")
+        instance.delete()
 
 class LedgerViewSet(BaseModelViewSet):
     queryset = LedgerEntry.objects.select_related("client").all().order_by("-entry_date","-id")
@@ -47,7 +53,21 @@ class ExpenseViewSet(BaseModelViewSet):
         serializer.save(created_by=self.request.user)
 
 class VendorViewSet(BaseModelViewSet):
-    queryset = Vendor.objects.all().order_by("name")
+    received = VendorDailyEntry.objects.filter(vendor=OuterRef("pk")).values("vendor").annotate(
+        total=Sum("vendor_amount")
+    ).values("total")
+    expenses = VendorDailyExpense.objects.filter(vendor=OuterRef("pk")).values("vendor").annotate(
+        total=Sum("total_deductions")
+    ).values("total")
+    paid = VendorPayment.objects.filter(vendor=OuterRef("pk")).values("vendor").annotate(
+        total=Sum("amount")
+    ).values("total")
+    money_field = DecimalField(max_digits=14, decimal_places=2)
+    queryset = Vendor.objects.annotate(
+        _total_received=Coalesce(Subquery(received, output_field=money_field), Value(0), output_field=money_field),
+        _total_expenses=Coalesce(Subquery(expenses, output_field=money_field), Value(0), output_field=money_field),
+        _total_paid=Coalesce(Subquery(paid, output_field=money_field), Value(0), output_field=money_field),
+    ).order_by("name")
     serializer_class = VendorSerializer
 
 class VendorDailyEntryViewSet(BaseModelViewSet):
