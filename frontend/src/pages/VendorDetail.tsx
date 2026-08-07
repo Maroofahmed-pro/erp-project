@@ -79,17 +79,17 @@ export default function VendorDetail(){
   const source=document.querySelector<HTMLElement>(".vendor-bill");
   if(!source){toast("Unable to create bill image","error");return}
   const capture=source.cloneNode(true) as HTMLElement;
-  capture.classList.remove("print-clone");capture.style.position="fixed";capture.style.left="-10000px";capture.style.top="0";capture.style.display="block";capture.style.width="940px";capture.style.maxWidth="none";capture.style.height="1672px";capture.style.borderRadius="0";capture.style.boxShadow="none";
+  capture.classList.remove("print-clone");capture.classList.add("bill-image-capture");capture.style.position="fixed";capture.style.left="-10000px";capture.style.top="0";capture.style.display="block";capture.style.width="940px";capture.style.minWidth="940px";capture.style.maxWidth="none";capture.style.height="1672px";capture.style.minHeight="1672px";capture.style.borderRadius="0";capture.style.boxShadow="none";
   document.body.appendChild(capture);
   const images=[...capture.querySelectorAll("img")];await Promise.all(images.map(image=>image.decode().catch(()=>undefined)));if(document.fonts)await document.fonts.ready;
   let canvas:HTMLCanvasElement;
-  try{const {default:html2canvas}=await import("html2canvas");canvas=await html2canvas(capture,{scale:2.5,width:940,height:1672,useCORS:true,backgroundColor:"#ffffff",logging:false,imageTimeout:15000})}catch{capture.remove();toast("Unable to create bill image","error");return}
+  try{const {default:html2canvas}=await import("html2canvas");canvas=await html2canvas(capture,{scale:2,width:940,height:1672,windowWidth:1440,windowHeight:1800,useCORS:true,backgroundColor:"#ffffff",logging:false,imageTimeout:15000})}catch{capture.remove();toast("Unable to create bill image","error");return}
   capture.remove();
-  const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/png",0.95));
+  const blob=await new Promise<Blob|null>(resolve=>canvas.toBlob(resolve,"image/jpeg",0.95));
   if(!blob){toast("Unable to create bill image","error");return}
   const safeName=vendor.name.replace(/[^\w-]+/g,"-").replace(/^-+|-+$/g,"")||`vendor-${vendor.id}`;
-  const file=new File([blob],`vendor-bill-${safeName}-${transactionDate}.png`,{type:"image/png"});
-  const shareData={files:[file],title:`Vendor bill - ${vendor.name}`,text:`High-resolution vendor bill for ${vendor.name} (${transactionDate})`};
+  const file=new File([blob],`vendor-bill-${safeName}-${transactionDate}.jpg`,{type:"image/jpeg"});
+  const shareData={files:[file]};
   if(navigator.share&&(!navigator.canShare||navigator.canShare(shareData))){
    try{await navigator.share(shareData)}catch(error){if((error as DOMException).name!=="AbortError")toast("Unable to share bill image","error")}
   }else{
