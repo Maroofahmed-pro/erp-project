@@ -185,11 +185,7 @@ html.dark .vendor-detail-page>section.card.overflow-hidden:first-of-type{backgro
 .created-vendor-bill .bill-table th,.created-vendor-bill .bill-table td{padding:11px 9px;font-size:1em;line-height:1.45}
 .created-vendor-bill .bill-table th{font-size:1.08em}
 .created-vendor-bill .created-bill-content b{font-size:1.08em}
-<<<<<<< HEAD
 .bill-image-capture{box-sizing:border-box!important;width:940px!important;min-width:940px!important;max-width:940px!important;height:1672px!important;min-height:1672px!important;max-height:1672px!important;aspect-ratio:940/1672!important;overflow:hidden!important;border-radius:0!important}
-=======
-.bill-image-capture{width:940px!important;min-width:940px!important;max-width:none!important;height:1672px!important;min-height:1672px!important;aspect-ratio:940/1672!important;border-radius:0!important}
->>>>>>> 218f84d7d4cc49175fc0a3303c493127999fea25
 .bill-image-capture.created-vendor-bill .created-bill-content{font-size:15px!important;line-height:1.625!important}
 .bill-image-capture>span{font-size:16px!important}
 .bill-image-capture>span:first-of-type{font-size:14px!important}
