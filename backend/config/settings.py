@@ -27,6 +27,10 @@ ALLOWED_HOSTS = [
     if host.strip()
 ]
 
+if DEBUG:
+    # Allow access through the laptop's LAN address during local development.
+    ALLOWED_HOSTS = ["*"]
+
 
 # -------------------------------------------------------------------
 # Applications
@@ -58,9 +62,6 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
 
-    # Keep this only if whitenoise is installed.
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -68,6 +69,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+WHITENOISE_INSTALLED = find_spec("whitenoise") is not None
+if WHITENOISE_INSTALLED:
+    MIDDLEWARE.insert(2, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 
 # -------------------------------------------------------------------
@@ -98,22 +103,31 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # -------------------------------------------------------------------
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
 
 if DATABASE_URL:
-    parsed = urlparse(DATABASE_URL)
-
+    database = urlparse(DATABASE_URL)
+    query_options = {
+        key: values[-1]
+        for key, values in parse_qs(database.query).items()
+        if values
+    }
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": parsed.path.lstrip("/"),
-            "USER": parsed.username,
-            "PASSWORD": parsed.password,
-            "HOST": parsed.hostname,
-            "PORT": parsed.port,
+            "NAME": database.path.lstrip("/"),
+            "USER": unquote(database.username or ""),
+            "PASSWORD": unquote(database.password or ""),
+            "HOST": database.hostname or "",
+            "PORT": database.port or 5432,
+            "CONN_MAX_AGE": 600,
+            "CONN_HEALTH_CHECKS": True,
+            "OPTIONS": query_options,
         }
     }
 else:
+    # SQLite is only for local development. Render supplies DATABASE_URL
+    # for its persistent PostgreSQL database.
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -154,7 +168,11 @@ STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        "BACKEND": (
+            "whitenoise.storage.CompressedStaticFilesStorage"
+            if WHITENOISE_INSTALLED
+            else "django.contrib.staticfiles.storage.StaticFilesStorage"
+        ),
     },
 }
 
@@ -177,6 +195,18 @@ CORS_ALLOWED_ORIGINS = [
     ).split(",")
     if origin.strip()
 ]
+
+CORS_ALLOWED_ORIGIN_REGEXES = (
+    [
+        r"^http://localhost:\d+$",
+        r"^http://127\.0\.0\.1:\d+$",
+        r"^http://192\.168\.\d{1,3}\.\d{1,3}:\d+$",
+        r"^http://10\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+$",
+        r"^http://172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}:\d+$",
+    ]
+    if DEBUG
+    else []
+)
 
 CSRF_TRUSTED_ORIGINS = [
     origin.strip().rstrip("/")

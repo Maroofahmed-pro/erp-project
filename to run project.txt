@@ -1,0 +1,6 @@
+.venv\Scripts\activate.bat
+
+npm run dev
+
+
+python manage.py runserver 
